@@ -75,6 +75,7 @@
             this.txtWeights.Location = new System.Drawing.Point(0, 0);
             this.txtWeights.Multiline = true;
             this.txtWeights.Name = "txtWeights";
+            this.txtWeights.ReadOnly = true;
             this.txtWeights.Size = new System.Drawing.Size(1617, 241);
             this.txtWeights.TabIndex = 5;
             // 
@@ -96,7 +97,7 @@
             this.ClientSize = new System.Drawing.Size(1617, 919);
             this.Controls.Add(this.pnlMain);
             this.Name = "FrmSnake";
-            this.Text = "Form1";
+            this.Text = "SnakeAI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmSnake_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmSnake_KeyDown);
