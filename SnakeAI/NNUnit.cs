@@ -10,6 +10,7 @@ namespace SnakeAI
     {
         public float activation(float input)
         {
+//            return (input >= 0 ? 1 : 0);
             return (float)(1.0 / (1.0 + Math.Pow(Math.E, -input)));
         }
     }

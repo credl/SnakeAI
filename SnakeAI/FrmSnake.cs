@@ -17,10 +17,11 @@ namespace SnakeAI
         NNNetwork[] networks;
         Snake[] snakes;
 
-        private const int NETWORKCNT = 15;
-        private const int MODNETWORKCNT = 14;
-        private const int FITTESTN = 5;
-        private const float MUTATION = 2.5f;
+        private const int NETWORKCNT = 20;
+        private const int MODNETWORKCNT = 20;
+        private const int FITTESTN = 10;
+        private const float MUTATIONMARG = 2.5f;
+        private const float MUTATIONPROP = 0.3f;
 
         private int generation = 1;
 
@@ -167,7 +168,7 @@ namespace SnakeAI
                     else if (i < MODNETWORKCNT)
                     {
                         newnetworks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 }, newnetworks[i % FITTESTN].getWeights());
-                        newnetworks[i].randomizeWeightsInc(1.5f, 0.6f);
+                        newnetworks[i].randomizeWeightsInc(MUTATIONMARG, MUTATIONPROP);
                     }else{
                         newnetworks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 });
                         newnetworks[i].randomizeWeights();

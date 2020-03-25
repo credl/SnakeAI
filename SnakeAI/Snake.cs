@@ -22,6 +22,8 @@ namespace SnakeAI
         int abortCnt;
         bool gameover = false;
 
+        int movementPoints = 0;
+
         System.Drawing.Graphics g;
         Random rnd;
 
@@ -44,11 +46,14 @@ namespace SnakeAI
             placeFood();
             survivedSteps = 0;
             abortCnt = 0;
+            movementPoints = 0;
         }
 
         public void moveLeft()
         {
             if (gameover) return;
+            if (food.X < snake[0].X) movementPoints += 1;
+            if (food.X > snake[0].X) movementPoints -= 2;
             shiftSnake();
             snake[0].X--;
             if (catchFood()) {
@@ -64,6 +69,8 @@ namespace SnakeAI
         public void moveRight()
         {
             if (gameover) return;
+            if (food.X > snake[0].X) movementPoints += 1;
+            if (food.X < snake[0].X) movementPoints -= 2;
             shiftSnake();
             snake[0].X++;
             if (catchFood())
@@ -80,6 +87,8 @@ namespace SnakeAI
         public void moveUp()
         {
             if (gameover) return;
+            if (food.Y < snake[0].Y) movementPoints += 1;
+            if (food.Y > snake[0].Y) movementPoints -= 2;
             shiftSnake();
             snake[0].Y--;
             if (catchFood())
@@ -96,6 +105,8 @@ namespace SnakeAI
         public void moveDown()
         {
             if (gameover) return;
+            if (food.Y > snake[0].Y) movementPoints += 1;
+            if (food.Y < snake[0].Y) movementPoints -= 2;
             shiftSnake();
             snake[0].Y++;
             if (catchFood())
@@ -198,7 +209,7 @@ namespace SnakeAI
         }
 
         public int getScrore() {
-            return survivedSteps + 1000 * snake.Length;
+            return survivedSteps + 1000 * snake.Length + movementPoints;
         }
 
         public float[] getGameCharacteristics()
@@ -241,7 +252,6 @@ namespace SnakeAI
 
             characteristics[8] = Math.Sign(food.X - snake[0].X);
             characteristics[9] = Math.Sign(food.Y - snake[0].Y);
-
 
 characteristics = new float[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, characteristics[8], characteristics[9] };
 
