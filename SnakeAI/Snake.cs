@@ -8,6 +8,9 @@ namespace SnakeAI
 {
     class Snake : System.Windows.Forms.PictureBox
     {
+        private const int DRAWINTERVAL = 1;
+        private int drawcnt = 0;
+
         private int cellsX = 20;
         private int cellsY = 20;
 
@@ -146,6 +149,10 @@ namespace SnakeAI
         }
 
         public void redraw() {
+            drawcnt++;
+            if (drawcnt < DRAWINTERVAL) return;
+            drawcnt = 0;
+
             if (this.Image.Width != this.Width || this.Image.Height != this.Height)
             {
                 System.Drawing.Bitmap img = new System.Drawing.Bitmap(this.Width, this.Height);
@@ -232,8 +239,8 @@ namespace SnakeAI
             while (snake[0].Y + val < cellsY - 1 && snake[0].X - val > 0 && !occupiedCells[snake[0].Y + val][snake[0].X - val]) val++;
             characteristics[7] = val;
 
-            characteristics[8] = food.X - snake[0].X;
-            characteristics[9] = food.Y - snake[0].Y;
+            characteristics[8] = Math.Sign(food.X - snake[0].X);
+            characteristics[9] = Math.Sign(food.Y - snake[0].Y);
 
 
 characteristics = new float[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, characteristics[8], characteristics[9] };

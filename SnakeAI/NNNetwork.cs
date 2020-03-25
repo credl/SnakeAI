@@ -49,7 +49,7 @@ namespace SnakeAI
         {
             System.Threading.Thread.Sleep(1);
             Random rnd = new Random(System.DateTime.Now.Millisecond);
-            for (int l = 0; l < weights.Length; l++)
+            for (int l = 1; l < weights.Length; l++)
             {
                 for (int u = 0; u < weights[l].Length; u++)
                 {
@@ -58,15 +58,18 @@ namespace SnakeAI
             }
         }
 
-        public void randomizeWeightsInc(double maxChange)
+        public void randomizeWeightsInc(float maxChange, float changeProp = 0.1f)
         {
             System.Threading.Thread.Sleep(1);
             Random rnd = new Random(System.DateTime.Now.Millisecond);
-            for (int l = 0; l < weights.Length; l++)
+            for (int l = 1; l < weights.Length; l++)
             {
                 for (int u = 0; u < weights[l].Length; u++)
                 {
-                    weights[l][u] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
+                    if (rnd.NextDouble() < changeProp)
+                    {
+                        weights[l][u] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
+                    }
                 }
             }
         }

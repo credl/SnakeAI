@@ -29,28 +29,65 @@
         private void InitializeComponent()
         {
             this.pnlMain = new System.Windows.Forms.Panel();
+            this.pnlBottom = new System.Windows.Forms.Panel();
             this.lblHighscore = new System.Windows.Forms.Label();
+            this.txtWeights = new System.Windows.Forms.TextBox();
+            this.btnStart = new System.Windows.Forms.Button();
             this.pnlMain.SuspendLayout();
+            this.pnlBottom.SuspendLayout();
             this.SuspendLayout();
             // 
             // pnlMain
             // 
             this.pnlMain.AutoScroll = true;
-            this.pnlMain.Controls.Add(this.lblHighscore);
+            this.pnlMain.AutoSize = true;
+            this.pnlMain.Controls.Add(this.pnlBottom);
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.Size = new System.Drawing.Size(1617, 919);
             this.pnlMain.TabIndex = 0;
             // 
+            // pnlBottom
+            // 
+            this.pnlBottom.Controls.Add(this.btnStart);
+            this.pnlBottom.Controls.Add(this.txtWeights);
+            this.pnlBottom.Controls.Add(this.lblHighscore);
+            this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBottom.Location = new System.Drawing.Point(0, 627);
+            this.pnlBottom.Name = "pnlBottom";
+            this.pnlBottom.Size = new System.Drawing.Size(1617, 292);
+            this.pnlBottom.TabIndex = 0;
+            // 
             // lblHighscore
             // 
             this.lblHighscore.AutoSize = true;
-            this.lblHighscore.Location = new System.Drawing.Point(12, 890);
+            this.lblHighscore.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblHighscore.Location = new System.Drawing.Point(0, 272);
             this.lblHighscore.Name = "lblHighscore";
             this.lblHighscore.Size = new System.Drawing.Size(18, 20);
-            this.lblHighscore.TabIndex = 0;
+            this.lblHighscore.TabIndex = 3;
             this.lblHighscore.Text = "0";
+            // 
+            // txtWeights
+            // 
+            this.txtWeights.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtWeights.Location = new System.Drawing.Point(0, 0);
+            this.txtWeights.Multiline = true;
+            this.txtWeights.Name = "txtWeights";
+            this.txtWeights.Size = new System.Drawing.Size(1617, 241);
+            this.txtWeights.TabIndex = 5;
+            // 
+            // btnStart
+            // 
+            this.btnStart.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnStart.Location = new System.Drawing.Point(0, 239);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(1617, 33);
+            this.btnStart.TabIndex = 6;
+            this.btnStart.Text = "Start";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // FrmSnake
             // 
@@ -60,18 +97,24 @@
             this.Controls.Add(this.pnlMain);
             this.Name = "FrmSnake";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmSnake_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmSnake_KeyDown);
             this.pnlMain.ResumeLayout(false);
-            this.pnlMain.PerformLayout();
+            this.pnlBottom.ResumeLayout(false);
+            this.pnlBottom.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Panel pnlMain;
+        private System.Windows.Forms.Panel pnlBottom;
         private System.Windows.Forms.Label lblHighscore;
+        private System.Windows.Forms.TextBox txtWeights;
+        private System.Windows.Forms.Button btnStart;
     }
 }
 
