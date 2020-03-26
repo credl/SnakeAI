@@ -308,7 +308,7 @@ namespace SnakeAI
 
 characteristics[8] = Math.Sign(food.X - snake[0].X);
 characteristics[9] = Math.Sign(food.Y - snake[0].Y);
-characteristics = new float[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, characteristics[8], characteristics[9] };
+characteristics = new float[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X - 1] == false ? 0 : 1, characteristics[8], characteristics[9] };
 
             return characteristics;
         }

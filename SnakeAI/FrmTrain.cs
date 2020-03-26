@@ -17,12 +17,12 @@ namespace SnakeAI
         NNNetwork[] networks;
         SnakeGame[] snakes;
 
-        private const int NETWORKCNT = 20;
-        private const int MODNETWORKCNT = 20;
+        private const int NETWORKCNT = 30;
+        private const int MODNETWORKCNT = 30;
         private const int FITTESTN = 5;
         private const float MUTATIONMARG = 3.0f;
         private const float MUTATIONPROP = 1.0f;
-        private int[] NETWORKTOPOLOGY = new int[] { 6, 8, 8, 4 };
+        private int[] NETWORKTOPOLOGY = new int[] { 10, 8, 8, 4 };
 
         private int generation = 1;
 
