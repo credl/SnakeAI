@@ -46,22 +46,49 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmMainMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMainMenu.Designer.cs">
+      <DependentUpon>FrmMainMenu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmNetworkVizualizer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmNetworkVizualizer.Designer.cs">
+      <DependentUpon>FrmNetworkVizualizer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmPlay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmPlay.Designer.cs">
+      <DependentUpon>FrmPlay.cs</DependentUpon>
+    </Compile>
     <Compile Include="NNLayer.cs" />
     <Compile Include="NNNetwork.cs" />
     <Compile Include="NNUnit.cs" />
-    <Compile Include="Snake.cs">
+    <Compile Include="SnakeGame.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FrmSnake.cs">
+    <Compile Include="FrmTrain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmSnake.Designer.cs">
-      <DependentUpon>FrmSnake.cs</DependentUpon>
+    <Compile Include="FrmTrain.Designer.cs">
+      <DependentUpon>FrmTrain.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FrmSnake.resx">
-      <DependentUpon>FrmSnake.cs</DependentUpon>
+    <EmbeddedResource Include="FrmMainMenu.resx">
+      <DependentUpon>FrmMainMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmNetworkVizualizer.resx">
+      <DependentUpon>FrmNetworkVizualizer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmPlay.resx">
+      <DependentUpon>FrmPlay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmTrain.resx">
+      <DependentUpon>FrmTrain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

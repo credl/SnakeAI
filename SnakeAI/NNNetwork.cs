@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SnakeAI
 {
-    class NNNetwork
+    public class NNNetwork
     {
         NNLayer[] layers;
         float[][] weights;
@@ -43,6 +43,16 @@ namespace SnakeAI
 
         public float[][] getWeights() {
             return weights;
+        }
+
+        public NNLayer getLayer(int i)
+        {
+            return layers[i];
+        }
+
+        public int getLayerCount()
+        {
+            return layers.Length;
         }
 
         public void randomizeWeights()

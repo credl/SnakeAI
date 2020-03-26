@@ -10,24 +10,25 @@ using System.Windows.Forms;
 
 namespace SnakeAI
 {
-    public partial class FrmSnake : Form
+    public partial class FrmTrain : Form
     {
-        Snake snake = new Snake();
+        SnakeGame snake = new SnakeGame();
 
         NNNetwork[] networks;
-        Snake[] snakes;
+        SnakeGame[] snakes;
 
         private const int NETWORKCNT = 20;
         private const int MODNETWORKCNT = 20;
-        private const int FITTESTN = 3;
+        private const int FITTESTN = 5;
         private const float MUTATIONMARG = 3.0f;
         private const float MUTATIONPROP = 1.0f;
+        private int[] NETWORKTOPOLOGY = new int[] { 6, 8, 8, 4 };
 
         private int generation = 1;
 
         private bool stop = false;
 
-        public FrmSnake()
+        public FrmTrain()
         {
             InitializeComponent();
         }
@@ -45,15 +46,13 @@ namespace SnakeAI
                 System.Threading.Thread.Sleep(1000);
             }
             */
-
-
-            snakes = new Snake[NETWORKCNT];
+            snakes = new SnakeGame[NETWORKCNT];
             networks = new NNNetwork[NETWORKCNT];
             int x = 0;
             int y = 0;
             for (int i = 0; i < snakes.Length; i++)
             {
-                snakes[i] = new Snake();
+                snakes[i] = new SnakeGame();
                 snakes[i].Width = 100;
                 snakes[i].Height = 100;
                 snakes[i].Left = snakes[i].Width * x;
@@ -61,23 +60,49 @@ namespace SnakeAI
                 snakes[i].moveLeft();
                 snakes[i].Refresh();
                 snakes[i].MouseMove += new MouseEventHandler(Snakes_MouseMove);
+                snakes[i].MouseUp += new MouseEventHandler(Snakes_MouseUp);
                 snakes[i].Tag = i;
                 pnlMain.Controls.Add(snakes[i]);
                 x++;
-                if (x >= 10) {
+                if (x >= 10)
+                {
                     x = 0;
                     y++;
                 }
+            }
 
-                networks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 });
+            initialize();
+        }
+
+        private void initialize()
+        {
+            generation = 1;
+            stop = false;
+
+            for (int i = 0; i < snakes.Length; i++)
+            {
+                networks[i] = new NNNetwork(NETWORKTOPOLOGY);
                 networks[i].randomizeWeights();
+            }
 
-                //float[] f = networks[i].propagate(new float[] { 2.3f, 4.2f, 4.5f, 6.6f });
+            //float[] f = networks[i].propagate(new float[] { 2.3f, 4.2f, 4.5f, 6.6f });
+        }
+
+        private void Snakes_MouseUp(object sender, MouseEventArgs e)
+        {
+            int index = (int)((SnakeGame)sender).Tag;
+            if (e.Button == MouseButtons.Left)
+            {
+                new FrmPlay(networks[index]).Show();
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                new FrmNetworkVizualizer(networks[index]).Show();
             }
         }
 
         private void Snakes_MouseMove(object sender, MouseEventArgs e) {
-            int index = (int)((Snake)sender).Tag;
+            int index = (int)((SnakeGame)sender).Tag;
             float[][] weights = networks[index].getWeights();
             string str = "";
             for (int l = 0; l < weights.Length; l++)
@@ -120,9 +145,13 @@ namespace SnakeAI
 
         private void simulateStep() {
             System.Threading.Thread[] threads = new System.Threading.Thread[networks.Length];
-            bool allGameOver = true;
             for (int n = 0; n < networks.Length; n++)
             {
+                snakes[n].setNetowrk(networks[n]);
+                threads[n] = new System.Threading.Thread(new System.Threading.ThreadStart( snakes[n].simulateToGameOver ));
+                threads[n].Start();
+
+                /*
                 if (snakes[n].isGameOver()) continue;
                 allGameOver = false;
 
@@ -152,21 +181,16 @@ namespace SnakeAI
                     threads[n].Start();
                     //                    snakes[n].moveRight();
                 }
-                else
-                {
-                    int a = 3;
-                }
+                */
             }
-            if (!allGameOver)
+            for (int n = 0; n < networks.Length; n++)
             {
-                for (int n = 0; n < networks.Length; n++)
-                {
-                    if (threads[n] != null) threads[n].Join();
-                }
+                if (threads[n] != null) threads[n].Join();
             }
+
             Refresh();
 
-            if (allGameOver)
+            if (true)
             {
                 GameScorePair[] gsp = new GameScorePair[networks.Length];
                 for (int n = 0; n < networks.Length; n++)
@@ -184,11 +208,11 @@ namespace SnakeAI
                     }
                     else if (i < MODNETWORKCNT)
                     {
-                        newnetworks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 }, newnetworks[i % FITTESTN].getWeights());
+                        newnetworks[i] = new NNNetwork(NETWORKTOPOLOGY, newnetworks[i % FITTESTN].getWeights());
                         newnetworks[i].randomizeWeightsInc(MUTATIONMARG, MUTATIONPROP);
                         //for (int ii = 0; ii < 10; ii++) newnetworks[i].randomizeSingleWeightsInc(MUTATIONMARG);
                     }else{
-                        newnetworks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 });
+                        newnetworks[i] = new NNNetwork(NETWORKTOPOLOGY);
                         newnetworks[i].randomizeWeights();
                     }
                     snakes[i].restart();
@@ -226,6 +250,8 @@ namespace SnakeAI
         private void btnStart_Click(object sender, EventArgs e)
         {
             btnStart.Enabled = false;
+            btnStop.Enabled = true;
+            initialize();
             while (!stop)
             {
                 simulateStep();
@@ -236,6 +262,13 @@ namespace SnakeAI
         private void FrmSnake_FormClosing(object sender, FormClosingEventArgs e)
         {
             stop = true;
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            stop = true;
+            btnStop.Enabled = false;
+            btnStart.Enabled = true;
         }
     }
 }

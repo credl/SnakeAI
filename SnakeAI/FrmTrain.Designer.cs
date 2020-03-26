@@ -1,6 +1,6 @@
 ﻿namespace SnakeAI
 {
-    partial class FrmSnake
+    partial class FrmTrain
     {
         /// <summary>
         /// Required designer variable.
@@ -30,9 +30,10 @@
         {
             this.pnlMain = new System.Windows.Forms.Panel();
             this.pnlBottom = new System.Windows.Forms.Panel();
-            this.lblHighscore = new System.Windows.Forms.Label();
-            this.txtWeights = new System.Windows.Forms.TextBox();
             this.btnStart = new System.Windows.Forms.Button();
+            this.txtWeights = new System.Windows.Forms.TextBox();
+            this.lblHighscore = new System.Windows.Forms.Label();
+            this.btnStop = new System.Windows.Forms.Button();
             this.pnlMain.SuspendLayout();
             this.pnlBottom.SuspendLayout();
             this.SuspendLayout();
@@ -50,6 +51,7 @@
             // 
             // pnlBottom
             // 
+            this.pnlBottom.Controls.Add(this.btnStop);
             this.pnlBottom.Controls.Add(this.btnStart);
             this.pnlBottom.Controls.Add(this.txtWeights);
             this.pnlBottom.Controls.Add(this.lblHighscore);
@@ -58,26 +60,6 @@
             this.pnlBottom.Name = "pnlBottom";
             this.pnlBottom.Size = new System.Drawing.Size(1617, 292);
             this.pnlBottom.TabIndex = 0;
-            // 
-            // lblHighscore
-            // 
-            this.lblHighscore.AutoSize = true;
-            this.lblHighscore.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lblHighscore.Location = new System.Drawing.Point(0, 272);
-            this.lblHighscore.Name = "lblHighscore";
-            this.lblHighscore.Size = new System.Drawing.Size(18, 20);
-            this.lblHighscore.TabIndex = 3;
-            this.lblHighscore.Text = "0";
-            // 
-            // txtWeights
-            // 
-            this.txtWeights.Dock = System.Windows.Forms.DockStyle.Top;
-            this.txtWeights.Location = new System.Drawing.Point(0, 0);
-            this.txtWeights.Multiline = true;
-            this.txtWeights.Name = "txtWeights";
-            this.txtWeights.ReadOnly = true;
-            this.txtWeights.Size = new System.Drawing.Size(1617, 241);
-            this.txtWeights.TabIndex = 5;
             // 
             // btnStart
             // 
@@ -90,13 +72,45 @@
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
-            // FrmSnake
+            // txtWeights
+            // 
+            this.txtWeights.Dock = System.Windows.Forms.DockStyle.Top;
+            this.txtWeights.Location = new System.Drawing.Point(0, 0);
+            this.txtWeights.Multiline = true;
+            this.txtWeights.Name = "txtWeights";
+            this.txtWeights.ReadOnly = true;
+            this.txtWeights.Size = new System.Drawing.Size(1617, 241);
+            this.txtWeights.TabIndex = 5;
+            // 
+            // lblHighscore
+            // 
+            this.lblHighscore.AutoSize = true;
+            this.lblHighscore.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.lblHighscore.Location = new System.Drawing.Point(0, 272);
+            this.lblHighscore.Name = "lblHighscore";
+            this.lblHighscore.Size = new System.Drawing.Size(18, 20);
+            this.lblHighscore.TabIndex = 3;
+            this.lblHighscore.Text = "0";
+            // 
+            // btnStop
+            // 
+            this.btnStop.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnStop.Enabled = false;
+            this.btnStop.Location = new System.Drawing.Point(0, 206);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(1617, 33);
+            this.btnStop.TabIndex = 7;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
+            // FrmTrain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1617, 919);
             this.Controls.Add(this.pnlMain);
-            this.Name = "FrmSnake";
+            this.Name = "FrmTrain";
             this.Text = "SnakeAI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmSnake_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -116,6 +130,7 @@
         private System.Windows.Forms.Label lblHighscore;
         private System.Windows.Forms.TextBox txtWeights;
         private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.Button btnStop;
     }
 }
 

@@ -16,7 +16,7 @@ namespace SnakeAI
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmSnake());
+            Application.Run(new FrmMainMenu());
         }
     }
 }

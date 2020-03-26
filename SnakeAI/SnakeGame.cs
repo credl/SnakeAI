@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SnakeAI
 {
-    class Snake : System.Windows.Forms.PictureBox
+    class SnakeGame : System.Windows.Forms.PictureBox
     {
         private const int DRAWINTERVAL = 1;
         private int drawcnt = 0;
@@ -14,22 +14,28 @@ namespace SnakeAI
         private int cellsX = 20;
         private int cellsY = 20;
 
-        bool[][] occupiedCells;
+        private bool[][] occupiedCells;
         private System.Drawing.Point[] snake;
         private System.Drawing.Point food;
 
-        int survivedSteps;
-        int abortCnt;
-        bool gameover = false;
+        private int survivedSteps;
+        private int abortCnt;
+        private bool gameover = false;
 
-        int movementPoints = 0;
+        NNNetwork network;
 
-        System.Drawing.Graphics g;
-        Random rnd;
+        private int movementPoints = 0;
 
-        public Snake() {
+        private System.Drawing.Graphics g;
+        private Random rnd;
+
+        private bool randomize;
+
+        LinkedList<System.Drawing.Point> recordedpath = new LinkedList<System.Drawing.Point>();
+
+        public SnakeGame(bool randomize = false) {
+            this.randomize = randomize;
             System.Drawing.Bitmap img = new System.Drawing.Bitmap(100, 100);
-            this.Image = img;
             g = System.Drawing.Graphics.FromImage(img);
             this.Image = img;
             System.Threading.Thread.Sleep(1);
@@ -37,7 +43,8 @@ namespace SnakeAI
         }
 
         public void restart() {
-            rnd = new Random(0); //System.DateTime.Now.Millisecond
+            System.Threading.Thread.Sleep(randomize ? 1 : 0);
+            rnd = new Random(randomize ? System.DateTime.Now.Millisecond : 0);
             gameover = false;
             snake = new System.Drawing.Point[] { new System.Drawing.Point(cellsX / 2, cellsY / 2), new System.Drawing.Point(cellsX / 2, cellsY / 2), new System.Drawing.Point(cellsX / 2, cellsY / 2) };
             occupiedCells = new bool[cellsY][];
@@ -47,6 +54,7 @@ namespace SnakeAI
             survivedSteps = 0;
             abortCnt = 0;
             movementPoints = 0;
+            recordedpath.Clear();
         }
 
         public void moveLeft()
@@ -171,20 +179,37 @@ namespace SnakeAI
                 g = System.Drawing.Graphics.FromImage(img);
             }
 
-            int cellWidth = this.Width / cellsY;
-            int cellHeight = this.Height / cellsY;
-
-            g.FillRectangle(new System.Drawing.SolidBrush(!gameover ? System.Drawing.Color.White : System.Drawing.Color.LightGray), new System.Drawing.Rectangle(0, 0, this.Width, this.Height));
-            System.Drawing.Brush head = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
-            System.Drawing.Brush rest = new System.Drawing.SolidBrush(System.Drawing.Color.Gray);
-            for (int i = snake.Length - 1; i >= 0; i--)
+            if (!isGameOver())
             {
-                g.FillRectangle(i == 0 ? head : rest, new System.Drawing.Rectangle(snake[i].X * cellWidth, snake[i].Y * cellHeight, cellWidth, cellHeight));
-            }
-            System.Drawing.Brush foodB = new System.Drawing.SolidBrush(System.Drawing.Color.Red);
-            g.FillRectangle(foodB, new System.Drawing.Rectangle(food.X * cellWidth, food.Y * cellHeight, cellWidth, cellHeight));
+                int cellWidth = this.Width / cellsY;
+                int cellHeight = this.Height / cellsY;
+                g.FillRectangle(new System.Drawing.SolidBrush(System.Drawing.Color.White), new System.Drawing.Rectangle(0, 0, this.Width, this.Height));
+                System.Drawing.Brush head = new System.Drawing.SolidBrush(System.Drawing.Color.Black);
+                System.Drawing.Brush rest = new System.Drawing.SolidBrush(System.Drawing.Color.Gray);
+                for (int i = snake.Length - 1; i >= 0; i--)
+                {
+                    g.FillRectangle(i == 0 ? head : rest, new System.Drawing.Rectangle(snake[i].X * cellWidth, snake[i].Y * cellHeight, cellWidth, cellHeight));
+                }
+                System.Drawing.Brush foodB = new System.Drawing.SolidBrush(System.Drawing.Color.Red);
+                g.FillRectangle(foodB, new System.Drawing.Rectangle(food.X * cellWidth, food.Y * cellHeight, cellWidth, cellHeight));
 
-            g.DrawRectangle(System.Drawing.Pens.DarkGray, new System.Drawing.Rectangle(0, 0, this.Width - 1, this.Height - 1));
+                g.DrawRectangle(System.Drawing.Pens.DarkGray, new System.Drawing.Rectangle(0, 0, this.Width - 1, this.Height - 1));
+            }
+            else
+            {
+                int cellWidth = this.Width / cellsY;
+                int cellHeight = this.Height / cellsY;
+                g.FillRectangle(new System.Drawing.SolidBrush(System.Drawing.Color.LightGray), new System.Drawing.Rectangle(0, 0, this.Width, this.Height));
+                int v = 0;
+                foreach (System.Drawing.Point p in recordedpath) {
+                    System.Drawing.Brush b = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 0, 0, v));
+                    if (v < 255) { v += 10; if (v > 255) v = 255;  }
+                    g.FillRectangle(b, new System.Drawing.Rectangle(p.X * cellWidth, p.Y * cellHeight, cellWidth, cellHeight));
+                    System.Drawing.Brush foodB = new System.Drawing.SolidBrush(System.Drawing.Color.Red);
+                    g.FillRectangle(foodB, new System.Drawing.Rectangle(food.X * cellWidth, food.Y * cellHeight, cellWidth, cellHeight));
+                    g.DrawRectangle(System.Drawing.Pens.DarkGray, new System.Drawing.Rectangle(0, 0, this.Width - 1, this.Height - 1));
+                }
+            }
         }
 
         private void collCheck() {
@@ -200,6 +225,34 @@ namespace SnakeAI
                     gameover = true;
                     redraw();
                     return;
+                }
+            }
+        }
+
+        public void setNetowrk(NNNetwork network) {
+            this.network = network;
+        }
+
+        public void simulateToGameOver() {
+            float[] res;
+            while (!isGameOver()) {
+                recordedpath.AddLast(new System.Drawing.Point(snake[0].X, snake[0].Y));
+                res = network.propagate(getGameCharacteristics());
+                if (res[0] >= res[1] && res[0] >= res[2] && res[0] >= res[3])
+                {
+                    moveUp();
+                }
+                else if (res[1] >= res[0] && res[1] >= res[2] && res[1] >= res[3])
+                {
+                    moveLeft();
+                }
+                else if (res[2] >= res[0] && res[2] >= res[1] && res[2] >= res[3])
+                {
+                    moveDown();
+                }
+                else if (res[3] >= res[0] && res[3] >= res[1] && res[3] >= res[2])
+                {
+                    moveRight();
                 }
             }
         }
@@ -250,9 +303,11 @@ namespace SnakeAI
             while (snake[0].Y + val < cellsY - 1 && snake[0].X - val > 0 && !occupiedCells[snake[0].Y + val][snake[0].X - val]) val++;
             characteristics[7] = val;
 
-            characteristics[8] = Math.Sign(food.X - snake[0].X);
-            characteristics[9] = Math.Sign(food.Y - snake[0].Y);
+            characteristics[8] = food.X - snake[0].X;
+            characteristics[9] = food.Y - snake[0].Y;
 
+characteristics[8] = Math.Sign(food.X - snake[0].X);
+characteristics[9] = Math.Sign(food.Y - snake[0].Y);
 characteristics = new float[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, characteristics[8], characteristics[9] };
 
             return characteristics;

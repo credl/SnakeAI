@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SnakeAI
 {
-    class NNLayer
+    public class NNLayer
     {
         NNUnit[] units;
 
@@ -32,6 +32,11 @@ namespace SnakeAI
                 ret[u] = units[u].activation(input[u]);
             }
             return ret;
+        }
+
+        public NNUnit getUnit(int i)
+        {
+            return units[i];
         }
     }
 }

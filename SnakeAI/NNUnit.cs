@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SnakeAI
 {
-    class NNUnit
+    public class NNUnit
     {
         public float activation(float input)
         {
