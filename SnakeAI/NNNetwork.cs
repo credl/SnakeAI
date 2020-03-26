@@ -73,6 +73,14 @@ namespace SnakeAI
                 }
             }
         }
+        public void randomizeSingleWeightsInc(float maxChange)
+        {
+            System.Threading.Thread.Sleep(1);
+            Random rnd = new Random(System.DateTime.Now.Millisecond);
+            int l = (int)(weights.Length * rnd.NextDouble());
+            int u = (int)(layers[l].getUnitCount() * rnd.NextDouble());
+            weights[l][u] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
+        }
 
         public float[] propagate(float[] input)
         {

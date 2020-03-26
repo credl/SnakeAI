@@ -209,7 +209,7 @@ namespace SnakeAI
         }
 
         public int getScrore() {
-            return survivedSteps + 1000 * snake.Length + movementPoints;
+            return /*survivedSteps +*/ 1000 * snake.Length + movementPoints;
         }
 
         public float[] getGameCharacteristics()

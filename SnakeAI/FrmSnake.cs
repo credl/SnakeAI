@@ -19,9 +19,9 @@ namespace SnakeAI
 
         private const int NETWORKCNT = 20;
         private const int MODNETWORKCNT = 20;
-        private const int FITTESTN = 10;
-        private const float MUTATIONMARG = 2.5f;
-        private const float MUTATIONPROP = 0.3f;
+        private const int FITTESTN = 3;
+        private const float MUTATIONMARG = 3.0f;
+        private const float MUTATIONPROP = 1.0f;
 
         private int generation = 1;
 
@@ -119,6 +119,7 @@ namespace SnakeAI
         }
 
         private void simulateStep() {
+            System.Threading.Thread[] threads = new System.Threading.Thread[networks.Length];
             bool allGameOver = true;
             for (int n = 0; n < networks.Length; n++)
             {
@@ -126,28 +127,44 @@ namespace SnakeAI
                 allGameOver = false;
 
                 float[] res = networks[n].propagate(snakes[n].getGameCharacteristics());
-                float m = max(res);
-                if (res[0] == m)
+                //                float m = max(res);
+                if (res[0] >= res[1] && res[0] >= res[2] && res[0] >= res[3])
                 {
-                    snakes[n].moveUp();
-                    Refresh();
+                    threads[n] = new System.Threading.Thread(new System.Threading.ThreadStart(snakes[n].moveUp));
+                    threads[n].Start();
+                    //                    snakes[n].moveUp();
                 }
-                else if (res[1] == m)
+                else if (res[1] >= res[0] && res[1] >= res[2] && res[1] >= res[3])
                 {
-                    snakes[n].moveLeft();
-                    Refresh();
+                    threads[n] = new System.Threading.Thread(new System.Threading.ThreadStart(snakes[n].moveLeft));
+                    threads[n].Start();
+                    //                    snakes[n].moveLeft();
                 }
-                else if (res[2] == m)
+                else if (res[2] >= res[0] && res[2] >= res[1] && res[2] >= res[3])
                 {
-                    snakes[n].moveDown();
-                    Refresh();
+                    threads[n] = new System.Threading.Thread(new System.Threading.ThreadStart(snakes[n].moveDown));
+                    threads[n].Start();
+                    //                    snakes[n].moveDown();
                 }
-                else if (res[3] == m)
+                else if (res[3] >= res[0] && res[3] >= res[1] && res[3] >= res[2])
                 {
-                    snakes[n].moveRight();
-                    Refresh();
+                    threads[n] = new System.Threading.Thread(new System.Threading.ThreadStart(snakes[n].moveRight));
+                    threads[n].Start();
+                    //                    snakes[n].moveRight();
+                }
+                else
+                {
+                    int a = 3;
                 }
             }
+            if (!allGameOver)
+            {
+                for (int n = 0; n < networks.Length; n++)
+                {
+                    if (threads[n] != null) threads[n].Join();
+                }
+            }
+            Refresh();
 
             if (allGameOver)
             {
@@ -169,6 +186,7 @@ namespace SnakeAI
                     {
                         newnetworks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 }, newnetworks[i % FITTESTN].getWeights());
                         newnetworks[i].randomizeWeightsInc(MUTATIONMARG, MUTATIONPROP);
+                        //for (int ii = 0; ii < 10; ii++) newnetworks[i].randomizeSingleWeightsInc(MUTATIONMARG);
                     }else{
                         newnetworks[i] = new NNNetwork(new int[] { 6, 8, 8, 4 });
                         newnetworks[i].randomizeWeights();
