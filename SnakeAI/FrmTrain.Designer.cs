@@ -111,7 +111,7 @@
             this.ClientSize = new System.Drawing.Size(1617, 919);
             this.Controls.Add(this.pnlMain);
             this.Name = "FrmTrain";
-            this.Text = "SnakeAI";
+            this.Text = "Train";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmSnake_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmSnake_KeyDown);

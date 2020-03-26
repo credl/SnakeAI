@@ -97,7 +97,7 @@ namespace SnakeAI
             }
             else if (e.Button == MouseButtons.Right)
             {
-                new FrmNetworkVizualizer(networks[index]).Show();
+                new FrmNetworkVisualizer(networks[index]).Show();
             }
         }
 

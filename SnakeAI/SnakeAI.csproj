@@ -52,11 +52,11 @@
     <Compile Include="FrmMainMenu.Designer.cs">
       <DependentUpon>FrmMainMenu.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmNetworkVizualizer.cs">
+    <Compile Include="FrmNetworkVisualizer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmNetworkVizualizer.Designer.cs">
-      <DependentUpon>FrmNetworkVizualizer.cs</DependentUpon>
+    <Compile Include="FrmNetworkVisualizer.Designer.cs">
+      <DependentUpon>FrmNetworkVisualizer.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmPlay.cs">
       <SubType>Form</SubType>
@@ -81,8 +81,8 @@
     <EmbeddedResource Include="FrmMainMenu.resx">
       <DependentUpon>FrmMainMenu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmNetworkVizualizer.resx">
-      <DependentUpon>FrmNetworkVizualizer.cs</DependentUpon>
+    <EmbeddedResource Include="FrmNetworkVisualizer.resx">
+      <DependentUpon>FrmNetworkVisualizer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmPlay.resx">
       <DependentUpon>FrmPlay.cs</DependentUpon>

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace SnakeAI
 {
-    public partial class FrmNetworkVizualizer : Form
+    public partial class FrmNetworkVisualizer : Form
     {
         private System.Drawing.Bitmap img;
         private System.Drawing.Graphics g;
@@ -20,7 +20,7 @@ namespace SnakeAI
         const int yPadding = 100;
         const int unitSize = 30;
 
-        public FrmNetworkVizualizer(NNNetwork network)
+        public FrmNetworkVisualizer(NNNetwork network)
         {
             InitializeComponent();
 
