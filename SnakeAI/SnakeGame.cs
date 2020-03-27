@@ -237,7 +237,7 @@ namespace SnakeAI
             float[] res;
             while (!isGameOver()) {
                 recordedpath.AddLast(new System.Drawing.Point(snake[0].X, snake[0].Y));
-                res = network.propagate(getGameCharacteristics());
+                res = network.propagateToEnd(getGameCharacteristics());
                 if (res[0] >= res[1] && res[0] >= res[2] && res[0] >= res[3])
                 {
                     moveUp();

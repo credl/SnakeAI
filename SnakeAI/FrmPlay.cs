@@ -73,7 +73,7 @@ namespace SnakeAI
                 System.Threading.Thread.Sleep(100);
 
                 if (network != null) {
-                    res = network.propagate(snake.getGameCharacteristics());
+                    res = network.propagateToEnd(snake.getGameCharacteristics());
                     if (res[0] >= res[1] && res[0] >= res[2] && res[0] >= res[3])
                     {
                         currentMovement = (int)Keys.Up;

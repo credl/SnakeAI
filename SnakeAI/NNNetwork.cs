@@ -92,10 +92,15 @@ namespace SnakeAI
             weights[l][u] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
         }
 
-        public float[] propagate(float[] input)
+        public float[] propagateToEnd(float[] input)
+        {
+            return propagate(input, layers.Length);
+        }
+
+        public float[] propagate(float[] input, int layer)
         {
             float[] prevoutput = input;
-            for (int l = 0; l < layers.Length; l++)
+            for (int l = 0; l < layer; l++)
             {
                 float[] weightedinput = new float[layers[l].getUnitCount()];
                 int w = 0;
@@ -116,6 +121,70 @@ namespace SnakeAI
                 prevoutput = layers[l].propagate(weightedinput);
             }
             return prevoutput;
+        }
+
+        private float qerror(float[] target, float[] prediction)
+        {
+            float err = 0.0f;
+            for (int i = 0; i < target.Length; i++)
+            {
+                err += (float)Math.Pow(target[i] - prediction[i], 2.0);
+            }
+            err /= 2.0f;
+            return err;
+        }
+
+        public void bptrain(float[][] trainingset, float[][] labels, int epochs = 1, float learningRate = 1.0f)
+        {
+            float[][] delta = new float[getLayerCount()][];
+            for (int layer = 0; layer < getLayerCount(); layer++)
+            {
+                delta[layer] = new float[getLayer(layer).getUnitCount()];
+            }
+
+            for (int e = 0; e < epochs; e++)
+            {
+                for (int t = 0; t < trainingset.Length; t++)
+                {
+                    float[] prediction = propagateToEnd(trainingset[t]);
+                    float qerr = qerror(labels[t], prediction);
+
+                    float[][] layeroutput = new float[getLayerCount()][];
+                    for (int layer = 0; layer < getLayerCount(); layer++)
+                    {
+                        layeroutput[layer] = propagate(trainingset[t], layer + 1);
+                    }
+
+                    for (int layer = getLayerCount() - 1; layer >= 1; layer--)
+                    {
+                        int we = 0;
+                        for (int u = 0; u < getLayer(layer).getUnitCount(); u++)
+                        {
+                            for (int prevu = 0; prevu < getLayer(layer - 1).getUnitCount(); prevu++)
+                            {
+                                if (layer == getLayerCount() - 1)
+                                {
+                                    delta[layer][u] = layeroutput[layer][u] * (1 - layeroutput[layer][u]) * (labels[t][u] - layeroutput[layer][u]);
+                                }
+                                else
+                                {
+                                    float weightsum = 0.0f;
+                                    int wen = u;
+                                    for (int unext = 0; unext < getLayer(layer + 1).getUnitCount(); unext++)
+                                    {
+                                        weightsum += delta[layer + 1][unext] * weights[layer + 1][wen];
+                                        wen += getLayer(layer).getUnitCount();
+                                    }
+                                    delta[layer][u] = layeroutput[layer][u] * (1 - layeroutput[layer][u]) * weightsum;
+                                }
+
+                                weights[layer][we] += learningRate * delta[layer][u] * layeroutput[layer - 1][prevu];
+                                we++;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
