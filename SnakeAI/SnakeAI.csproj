@@ -64,9 +64,11 @@
     <Compile Include="FrmPlay.Designer.cs">
       <DependentUpon>FrmPlay.cs</DependentUpon>
     </Compile>
+    <Compile Include="NNDeepBeliefNetwork.cs" />
     <Compile Include="NNLayer.cs" />
     <Compile Include="NNNetwork.cs" />
     <Compile Include="NNUnit.cs" />
+    <Compile Include="NNRestrictedBoltzmannMachine.cs" />
     <Compile Include="SnakeGame.cs">
       <SubType>Component</SubType>
     </Compile>
