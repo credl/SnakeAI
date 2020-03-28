@@ -14,7 +14,7 @@ namespace SnakeAI
         [STAThread]
         static void Main()
         {
-
+            /*
             double[][] trainingset = new double[][]
                 {
                     new double[]{ 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 },
@@ -37,15 +37,13 @@ namespace SnakeAI
                     new double[]{ 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 },
                     new double[]{ 0.0, 1.0, 1.0, 1.0, 1.0, 0.0 },
                 };
-            /*
-                        NNRestrictedBoltzmannMachine rbm = new NNRestrictedBoltzmannMachine(6, 2);
-                        rbm.train(trainingset, 20000, 0.1f);
-                        foreach (float[] t in trainingset) 
-                        {
-                            float[] recon = rbm.sample(rbm.propagateHiddenToVisible(rbm.sample(rbm.propagateVisibleToHidden(t))));
-                        }
-            //            float[] invent = rbm.sample(rbm.propagateHiddenToVisible(rbm.sample(rbm.propagateVisibleToHidden(new float[] { 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f }))));
-            */
+            
+            //            NNRestrictedBoltzmannMachine rbm = new NNRestrictedBoltzmannMachine(6, 2);
+            //            rbm.train(trainingset, 20000, 0.1f);
+            //            foreach (float[] t in trainingset) 
+            //            {
+            //                float[] recon = rbm.sample(rbm.propagateHiddenToVisible(rbm.sample(rbm.propagateVisibleToHidden(t))));
+            //            }
 
             NNDeepBeliefNetwork dbn = new NNDeepBeliefNetwork(new int[] { 6, 4, 4, 2 });
             dbn.train(trainingset, 0, 20000, 0.1f);
@@ -65,8 +63,7 @@ namespace SnakeAI
             {
                 double[] classification = net.propagateToEnd(dbn.propagateToEnd(t));
             }
-
-            
+            */            
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

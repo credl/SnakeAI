@@ -78,7 +78,7 @@ namespace SnakeAI
                             System.Drawing.Point p1 = getUnitPosition(l - 1, prevUnit, layerWidth, prevLayerHeight);
                             System.Drawing.Point p2 = getUnitPosition(l, currentUnit, layerWidth, layerHeight);
                             int weight = (int)(255 * (weights[l][currentUnit, prevUnit]));
-                            weight = Math.Max(0, Math.Min(255, weight));
+                            weight = Math.Max(-255, Math.Min(255, weight));
                             System.Drawing.Pen pen = new Pen(Color.FromArgb(20, weight < 0 ? Math.Abs(weight) : 0, weight >= 0 ? weight : 0, 0), 20.0f * Math.Min(Math.Abs((float)weight) / 255.0f, 1.0f));
                             g.DrawLine(pen, p1, p2);
                         }
@@ -95,7 +95,7 @@ namespace SnakeAI
                 for (int u = 0; u < network.getLayer(l).getUnitCount(); u++)
                 {
                     System.Drawing.Point p = getUnitPosition(l, u, layerWidth, layerHeight);
-                    g.DrawEllipse(System.Drawing.Pens.Black, new Rectangle(p.X - unitSize / 2, p.Y - unitSize / 2, unitSize, unitSize));
+                    g.FillEllipse(System.Drawing.Brushes.Black, new Rectangle(p.X - unitSize / 2, p.Y - unitSize / 2, unitSize, unitSize));
                 }
             }
         }

@@ -38,7 +38,7 @@ namespace SnakeAI
         {
             for (int layer = 0; layer < getLayerCount(); layer++)
             {
-                weightsPerLayer[layer] = new NNMatrix(weightsPerLayer[layer]);
+                this.weightsPerLayer[layer] = new NNMatrix(weightsPerLayer[layer]);
             }
         }
 
@@ -66,7 +66,7 @@ namespace SnakeAI
                 {
                     for (int c = 0; c < weightsPerLayer[layer].colCount(); c++)
                     {
-                        weightsPerLayer[layer][c, r] = (double)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
+                        weightsPerLayer[layer][c, r] = rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
                     }
                 }
             }
@@ -84,12 +84,13 @@ namespace SnakeAI
                     {
                         if (rnd.NextDouble() < changeProp)
                         {
-                            weightsPerLayer[layer][c, r] = (float)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
+                            weightsPerLayer[layer][c, r] += maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
                         }
                     }
                 }
             }
         }
+
         public void randomizeSingleWeightsInc(double maxChange)
         {
             System.Threading.Thread.Sleep(1);
@@ -97,7 +98,7 @@ namespace SnakeAI
             int l = (int)(getLayerCount() * rnd.NextDouble());
             int r = (int)(weightsPerLayer[l].rowCount() * rnd.NextDouble());
             int c = (int)(weightsPerLayer[l].colCount() * rnd.NextDouble());
-            weightsPerLayer[l][c, r] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
+            weightsPerLayer[l][c, r] += maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
         }
 
         public double[] propagateToEnd(double[] inputVec)

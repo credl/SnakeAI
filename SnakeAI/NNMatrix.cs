@@ -123,7 +123,7 @@ namespace SnakeAI
 
         public static NNMatrix operator *(NNMatrix a, double f)
         {
-            NNMatrix ret = new NNMatrix(a.rowCount(), a.colCount());
+            NNMatrix ret = new NNMatrix(a.colCount(), a.rowCount());
             for (int c = 0; c < a.colCount(); c++)
                 for (int r = 0; r < a.rowCount(); r++)
                     ret[c, r] = a[c, r] * f;
@@ -141,7 +141,7 @@ namespace SnakeAI
             {
                 throw new Exception("Matrices must have the same dimensions");
             }
-            NNMatrix ret = new NNMatrix(a.rowCount(), a.colCount());
+            NNMatrix ret = new NNMatrix(a.colCount(), a.rowCount());
             for (int c = 0; c < a.colCount(); c++)
                 for (int r = 0; r < a.rowCount(); r++)
                     ret[c, r] = op(a[c, r], b[c, r]);
