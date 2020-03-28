@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SnakeAI
+namespace NeuralNetworks
 {
-    public class NNNetwork
+    public class NNFeedForwardNetwork
     {
+        public delegate void NNUpdateCallback();
         NNLayer[] layers;
         NNMatrix[] weightsPerLayer;
+        LinkedList<NNUpdateCallback> updateCallbacks = new LinkedList<NNUpdateCallback>();
 
-        public NNNetwork(int[] unitsPerLayer)
+        public NNFeedForwardNetwork(int[] unitsPerLayer)
         {
             layers = new NNLayer[unitsPerLayer.Length];
             weightsPerLayer = new NNMatrix[getLayerCount()];
@@ -31,15 +33,24 @@ namespace SnakeAI
                     weightsPerLayer[layer] = new NNMatrix(getLayer(layer).getUnitCount(), getLayer(layer - 1).getUnitCount());
                 }
             }
+            callUpdateCallbacks();
         }
 
 
-        public NNNetwork(int[] unitsPerLayer, NNMatrix[] weightsPerLayer) : this(unitsPerLayer)
+        public NNFeedForwardNetwork(int[] unitsPerLayer, NNMatrix[] weightsPerLayer) : this(unitsPerLayer)
         {
+            setWeights(weightsPerLayer);
+            callUpdateCallbacks();
+        }
+
+        public void setWeights(NNMatrix[] weightsPerLayer)
+        {
+            if (getLayerCount() != weightsPerLayer.Length) throw new Exception("Mismatch of layer count of networks");
             for (int layer = 0; layer < getLayerCount(); layer++)
             {
                 this.weightsPerLayer[layer] = new NNMatrix(weightsPerLayer[layer]);
             }
+            callUpdateCallbacks();
         }
 
         public NNMatrix[] getWeights() {
@@ -70,6 +81,7 @@ namespace SnakeAI
                     }
                 }
             }
+            callUpdateCallbacks();
         }
 
         public void randomizeWeightsInc(double maxChange, double changeProp = 0.1f)
@@ -89,6 +101,7 @@ namespace SnakeAI
                     }
                 }
             }
+            callUpdateCallbacks();
         }
 
         public void randomizeSingleWeightsInc(double maxChange)
@@ -99,6 +112,7 @@ namespace SnakeAI
             int r = (int)(weightsPerLayer[l].rowCount() * rnd.NextDouble());
             int c = (int)(weightsPerLayer[l].colCount() * rnd.NextDouble());
             weightsPerLayer[l][c, r] += maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
+            callUpdateCallbacks();
         }
 
         public double[] propagateToEnd(double[] inputVec)
@@ -181,6 +195,34 @@ namespace SnakeAI
                             }
                         }
                     }
+                }
+                callUpdateCallbacks();
+            }
+        }
+
+        public void addUpdateCallback(NNUpdateCallback cb)
+        {
+            lock (updateCallbacks)
+            {
+                updateCallbacks.AddLast(cb);
+            }
+        }
+
+        public void removeUpdateCallback(NNUpdateCallback cb)
+        {
+            lock (updateCallbacks)
+            {
+                updateCallbacks.Remove(cb);
+            }
+        }
+
+        private void callUpdateCallbacks()
+        {
+            lock (updateCallbacks)
+            {
+                foreach (NNUpdateCallback cb in updateCallbacks)
+                {
+                    cb();
                 }
             }
         }

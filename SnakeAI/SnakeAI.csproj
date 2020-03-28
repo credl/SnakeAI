@@ -67,7 +67,7 @@
     <Compile Include="NNDeepBeliefNetwork.cs" />
     <Compile Include="NNLayer.cs" />
     <Compile Include="NNMatrix.cs" />
-    <Compile Include="NNNetwork.cs" />
+    <Compile Include="NNFeedForwardNetwork.cs" />
     <Compile Include="NNUnit.cs" />
     <Compile Include="NNRestrictedBoltzmannMachine.cs" />
     <Compile Include="SnakeGame.cs">

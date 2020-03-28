@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using NeuralNetworks;
+
 namespace SnakeAI
 {
     static class Program
@@ -14,7 +16,6 @@ namespace SnakeAI
         [STAThread]
         static void Main()
         {
-            /*
             double[][] trainingset = new double[][]
                 {
                     new double[]{ 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 },
@@ -56,18 +57,25 @@ namespace SnakeAI
                 resttrainingset[t] = classification;
             }
 
-            NNNetwork net = new NNNetwork(new int[] { 2, 3, 3, 2 });
+            NNFeedForwardNetwork net = new NNFeedForwardNetwork(new int[] { 2, 10, 10, 2 });
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
             net.randomizeWeights();
+
+//            FrmNetworkVisualizer vis = new FrmNetworkVisualizer(net);
+//            vis.Show();
             net.bptrain(resttrainingset, labels, 30000, 1.0);
             foreach (double[] t in testset)
             {
                 double[] classification = net.propagateToEnd(dbn.propagateToEnd(t));
             }
-            */            
+//            Application.Run(vis);
 
+            /*
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new FrmMainMenu());
+            */
         }
     }
 }

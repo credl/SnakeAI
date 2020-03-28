@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using NeuralNetworks;
+
 namespace SnakeAI
 {
     public partial class FrmPlay : Form
@@ -15,7 +17,7 @@ namespace SnakeAI
         private SnakeGame snake;
         private System.Threading.Thread gameloopThread;
         private int currentMovement;
-        private NNNetwork network;
+        private NNFeedForwardNetwork network;
         private bool stop = false;
 
         public FrmPlay()
@@ -28,7 +30,7 @@ namespace SnakeAI
             gameloopThread.Start();
         }
 
-        public FrmPlay(NNNetwork network)
+        public FrmPlay(NNFeedForwardNetwork network)
         {
             InitializeComponent();
 

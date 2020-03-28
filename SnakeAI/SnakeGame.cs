@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using NeuralNetworks;
+
 namespace SnakeAI
 {
     class SnakeGame : System.Windows.Forms.PictureBox
@@ -22,7 +24,7 @@ namespace SnakeAI
         private int abortCnt;
         private bool gameover = false;
 
-        NNNetwork network;
+        NNFeedForwardNetwork network;
 
         private int movementPoints = 0;
 
@@ -229,7 +231,7 @@ namespace SnakeAI
             }
         }
 
-        public void setNetowrk(NNNetwork network) {
+        public void setNetowrk(NNFeedForwardNetwork network) {
             this.network = network;
         }
 

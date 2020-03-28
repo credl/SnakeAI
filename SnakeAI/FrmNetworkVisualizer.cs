@@ -8,19 +8,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using NeuralNetworks;
+
 namespace SnakeAI
 {
     public partial class FrmNetworkVisualizer : Form
     {
         private System.Drawing.Bitmap img;
         private System.Drawing.Graphics g;
-        private NNNetwork network;
+        private NNFeedForwardNetwork network;
+        private NNFeedForwardNetwork.NNUpdateCallback updateCallback;
 
         const int xPadding = 100;
         const int yPadding = 100;
         const int unitSize = 30;
 
-        public FrmNetworkVisualizer(NNNetwork network)
+        public FrmNetworkVisualizer(NNFeedForwardNetwork network)
         {
             InitializeComponent();
 
@@ -31,7 +34,8 @@ namespace SnakeAI
             setNetwork(network);
         }
 
-        public void setNetwork(NNNetwork network) {
+        public void setNetwork(NNFeedForwardNetwork network) {
+            if (network != null) network.removeUpdateCallback(updateCallback);
             this.network = network;
 
             const int xMinSizePerUnit = 300;
@@ -43,6 +47,8 @@ namespace SnakeAI
             g = System.Drawing.Graphics.FromImage(img);
 
             redraw();
+            updateCallback = new NNFeedForwardNetwork.NNUpdateCallback(redraw);
+            network.addUpdateCallback(updateCallback);
         }
 
         private int getMaxUnitsPerLayer()
@@ -62,6 +68,7 @@ namespace SnakeAI
 
             int layerWidth = layerCnt > 1 ? (img.Width - xPadding) / (layerCnt - 1) : 0;
 
+            g.Clear(Color.White);
             int prevLayerHeight = 0, layerHeight = 0;
             for (int l = 0; l < layerCnt; l++)
             {
@@ -98,6 +105,8 @@ namespace SnakeAI
                     g.FillEllipse(System.Drawing.Brushes.Black, new Rectangle(p.X - unitSize / 2, p.Y - unitSize / 2, unitSize, unitSize));
                 }
             }
+            Application.DoEvents();
+            this.Refresh();
         }
 
         private System.Drawing.Point getUnitPosition(int layer, int unit, int layerWidth, int layerHeight) {
@@ -107,6 +116,16 @@ namespace SnakeAI
         private void picNetwork_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void picNetwork_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void FrmNetworkVisualizer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (network != null) network.removeUpdateCallback(updateCallback);
         }
     }
 }

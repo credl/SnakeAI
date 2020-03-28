@@ -51,6 +51,7 @@
             this.picNetwork.Size = new System.Drawing.Size(800, 450);
             this.picNetwork.TabIndex = 2;
             this.picNetwork.TabStop = false;
+            this.picNetwork.Click += new System.EventHandler(this.picNetwork_Click_1);
             // 
             // FrmNetworkVisualizer
             // 
@@ -60,6 +61,7 @@
             this.Controls.Add(this.pnlScroller);
             this.Name = "FrmNetworkVisualizer";
             this.Text = "Network Visualizer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmNetworkVisualizer_FormClosing);
             this.pnlScroller.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.picNetwork)).EndInit();
             this.ResumeLayout(false);

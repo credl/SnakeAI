@@ -8,13 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using NeuralNetworks;
+
 namespace SnakeAI
 {
     public partial class FrmTrain : Form
     {
         SnakeGame snake = new SnakeGame();
 
-        NNNetwork[] networks;
+        NNFeedForwardNetwork[] networks;
         SnakeGame[] snakes;
 
         private const int NETWORKCNT = 30;
@@ -47,7 +49,7 @@ namespace SnakeAI
             }
             */
             snakes = new SnakeGame[NETWORKCNT];
-            networks = new NNNetwork[NETWORKCNT];
+            networks = new NNFeedForwardNetwork[NETWORKCNT];
             int x = 0;
             int y = 0;
             for (int i = 0; i < snakes.Length; i++)
@@ -80,7 +82,7 @@ namespace SnakeAI
 
             for (int i = 0; i < snakes.Length; i++)
             {
-                networks[i] = new NNNetwork(NETWORKTOPOLOGY);
+                networks[i] = new NNFeedForwardNetwork(NETWORKTOPOLOGY);
                 networks[i].randomizeWeights();
             }
 
@@ -182,26 +184,27 @@ namespace SnakeAI
                     gsp[n] = new GameScorePair(n, snakes[n].getScrore());
                 }
                 Array.Sort(gsp);
-                NNNetwork[] newnetworks = new NNNetwork[networks.Length];
+                NNFeedForwardNetwork[] networkscopy = new NNFeedForwardNetwork[networks.Length];
+                for (int i = 0; i < networks.Length; i++)
+                {
+                    networkscopy[i] = new NNFeedForwardNetwork(NETWORKTOPOLOGY, networks[i].getWeights());
+                }
                 for (int i = 0; i < networks.Length; i++)
                 {
                     if (i < FITTESTN)
                     {
                         if (i == 0) lblHighscore.Text = "Generation: " + generation + ", Best Score: " + gsp[i].score;
-                        newnetworks[i] = networks[gsp[i].gameid];
+                        networks[i].setWeights(networkscopy[gsp[i].gameid].getWeights());
                     }
                     else if (i < MODNETWORKCNT)
                     {
-                        newnetworks[i] = new NNNetwork(NETWORKTOPOLOGY, newnetworks[i % FITTESTN].getWeights());
-                        newnetworks[i].randomizeWeightsInc(MUTATIONMARG, MUTATIONPROP);
-                        //for (int ii = 0; ii < 10; ii++) newnetworks[i].randomizeSingleWeightsInc(MUTATIONMARG);
+                        networks[i].setWeights(networks[i % FITTESTN].getWeights());
+                        networks[i].randomizeWeightsInc(MUTATIONMARG, MUTATIONPROP);
                     }else{
-                        newnetworks[i] = new NNNetwork(NETWORKTOPOLOGY);
-                        newnetworks[i].randomizeWeights();
+                        networks[i].randomizeWeights();
                     }
                     snakes[i].restart();
                 }
-                networks = newnetworks;
                 generation++;
             }
         }
