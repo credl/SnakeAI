@@ -9,40 +9,41 @@ namespace SnakeAI
     public class NNNetwork
     {
         NNLayer[] layers;
-        float[][] weights;
+        NNMatrix[] weightsPerLayer;
 
         public NNNetwork(int[] unitsPerLayer)
         {
             layers = new NNLayer[unitsPerLayer.Length];
-            weights = new float[unitsPerLayer.Length][];
-            for (int i = 0; i < unitsPerLayer.Length; i++)
+            weightsPerLayer = new NNMatrix[getLayerCount()];
+            for (int layer = 0; layer < getLayerCount(); layer++)
             {
-                layers[i] = new NNLayer(unitsPerLayer[i]);
-                if (i == 0)
+                layers[layer] = new NNLayer(unitsPerLayer[layer]);
+                if (layer == 0)
                 {
-                    weights[i] = new float[unitsPerLayer[i]];
-                    for (int u = 0; u < weights[i].Length; u++)
+                    weightsPerLayer[layer] = new NNMatrix(getLayer(layer).getUnitCount(), getLayer(layer).getUnitCount());
+                    for (int unit = 0; unit < getLayer(layer).getUnitCount(); unit++)
                     {
-                        weights[i][u] = 1.0f;
+                        weightsPerLayer[layer][unit, unit] = 1.0;
                     }
                 }
                 else
                 {
-                    weights[i] = new float[unitsPerLayer[i] * unitsPerLayer[i - 1]];
+                    weightsPerLayer[layer] = new NNMatrix(getLayer(layer).getUnitCount(), getLayer(layer - 1).getUnitCount());
                 }
             }
         }
 
 
-        public NNNetwork(int[] unitsPerLayer, float[][] weights) : this(unitsPerLayer)
+        public NNNetwork(int[] unitsPerLayer, NNMatrix[] weightsPerLayer) : this(unitsPerLayer)
         {
-            for (int l = 0; l < weights.Length; l++)
-                for (int u = 0; u < weights[l].Length; u++)
-                    this.weights[l][u] = weights[l][u];
+            for (int layer = 0; layer < getLayerCount(); layer++)
+            {
+                weightsPerLayer[layer] = new NNMatrix(weightsPerLayer[layer]);
+            }
         }
 
-        public float[][] getWeights() {
-            return weights;
+        public NNMatrix[] getWeights() {
+            return weightsPerLayer;
         }
 
         public NNLayer getLayer(int i)
@@ -59,97 +60,96 @@ namespace SnakeAI
         {
             System.Threading.Thread.Sleep(1);
             Random rnd = new Random(System.DateTime.Now.Millisecond);
-            for (int l = 1; l < weights.Length; l++)
+            for (int layer = 1; layer < getLayerCount(); layer++)
             {
-                for (int u = 0; u < weights[l].Length; u++)
+                for (int r = 0; r < weightsPerLayer[layer].rowCount(); r++)
                 {
-                    weights[l][u] = (float)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
-                }
-            }
-        }
-
-        public void randomizeWeightsInc(float maxChange, float changeProp = 0.1f)
-        {
-            System.Threading.Thread.Sleep(1);
-            Random rnd = new Random(System.DateTime.Now.Millisecond);
-            for (int l = 1; l < weights.Length; l++)
-            {
-                for (int u = 0; u < weights[l].Length; u++)
-                {
-                    if (rnd.NextDouble() < changeProp)
+                    for (int c = 0; c < weightsPerLayer[layer].colCount(); c++)
                     {
-                        weights[l][u] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
+                        weightsPerLayer[layer][c, r] = (double)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
                     }
                 }
             }
         }
-        public void randomizeSingleWeightsInc(float maxChange)
+
+        public void randomizeWeightsInc(double maxChange, double changeProp = 0.1f)
         {
             System.Threading.Thread.Sleep(1);
             Random rnd = new Random(System.DateTime.Now.Millisecond);
-            int l = (int)(weights.Length * rnd.NextDouble());
-            int u = (int)(layers[l].getUnitCount() * rnd.NextDouble());
-            weights[l][u] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
-        }
-
-        public float[] propagateToEnd(float[] input)
-        {
-            return propagate(input, layers.Length);
-        }
-
-        public float[] propagate(float[] input, int layer)
-        {
-            float[] prevoutput = input;
-            for (int l = 0; l < layer; l++)
+            for (int layer = 1; layer < getLayerCount(); layer++)
             {
-                float[] weightedinput = new float[layers[l].getUnitCount()];
-                int w = 0;
-                for (int u = 0; u < layers[l].getUnitCount(); u++)
+                for (int r = 0; r < weightsPerLayer[layer].rowCount(); r++)
                 {
-                    if (l == 0)
+                    for (int c = 0; c < weightsPerLayer[layer].colCount(); c++)
                     {
-                        weightedinput[u] = input[u];
-                    }
-                    else
-                    {
-                        for (int po = 0; po < prevoutput.Length; po++)
+                        if (rnd.NextDouble() < changeProp)
                         {
-                            weightedinput[u] += prevoutput[po] * weights[l][w++];
+                            weightsPerLayer[layer][c, r] = (float)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
                         }
                     }
                 }
-                prevoutput = layers[l].propagate(weightedinput);
+            }
+        }
+        public void randomizeSingleWeightsInc(double maxChange)
+        {
+            System.Threading.Thread.Sleep(1);
+            Random rnd = new Random(System.DateTime.Now.Millisecond);
+            int l = (int)(getLayerCount() * rnd.NextDouble());
+            int r = (int)(weightsPerLayer[l].rowCount() * rnd.NextDouble());
+            int c = (int)(weightsPerLayer[l].colCount() * rnd.NextDouble());
+            weightsPerLayer[l][c, r] += (float)(maxChange * rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1));
+        }
+
+        public double[] propagateToEnd(double[] inputVec)
+        {
+            return propagate(inputVec, layers.Length);
+        }
+
+        public double[] propagate(double[] inputVec, int propagateToOutputOfLayer)
+        {
+            double[] prevoutput = inputVec;
+            for (int layer = 0; layer < propagateToOutputOfLayer; layer++)
+            {
+                double[] weightedinputOfCurrentLayer = new double[layers[layer].getUnitCount()];
+                for (int currentLayerUnit = 0; currentLayerUnit < layers[layer].getUnitCount(); currentLayerUnit++)
+                {
+                    for (int prevLayerUnit = 0; prevLayerUnit < weightsPerLayer[layer].rowCount(); prevLayerUnit++)
+                    {
+                        weightedinputOfCurrentLayer[currentLayerUnit] += prevoutput[prevLayerUnit] * weightsPerLayer[layer][currentLayerUnit, prevLayerUnit];
+                    }
+                }
+                prevoutput = layers[layer].propagate(weightedinputOfCurrentLayer);
             }
             return prevoutput;
         }
 
-        private float qerror(float[] target, float[] prediction)
+        private double qerror(double[] target, double[] prediction)
         {
-            float err = 0.0f;
+            double err = 0.0;
             for (int i = 0; i < target.Length; i++)
             {
-                err += (float)Math.Pow(target[i] - prediction[i], 2.0);
+                err += Math.Pow(target[i] - prediction[i], 2.0);
             }
-            err /= 2.0f;
+            err /= 2.0;
             return err;
         }
 
-        public void bptrain(float[][] trainingset, float[][] labels, int epochs = 1, float learningRate = 1.0f)
+        public void bptrain(double[][] trainingset, double[][] labels, int epochs = 1, double learningRate = 1.0)
         {
-            float[][] delta = new float[getLayerCount()][];
+            double[][] deltasPerLayer = new double[getLayerCount()][];
             for (int layer = 0; layer < getLayerCount(); layer++)
             {
-                delta[layer] = new float[getLayer(layer).getUnitCount()];
+                deltasPerLayer[layer] = new double[getLayer(layer).getUnitCount()];
             }
 
             for (int e = 0; e < epochs; e++)
             {
                 for (int t = 0; t < trainingset.Length; t++)
                 {
-                    float[] prediction = propagateToEnd(trainingset[t]);
-                    float qerr = qerror(labels[t], prediction);
+                    double[] prediction = propagateToEnd(trainingset[t]);
+                    double qerr = qerror(labels[t], prediction);
 
-                    float[][] layeroutput = new float[getLayerCount()][];
+                    double[][] layeroutput = new double[getLayerCount()][];
                     for (int layer = 0; layer < getLayerCount(); layer++)
                     {
                         layeroutput[layer] = propagate(trainingset[t], layer + 1);
@@ -157,29 +157,26 @@ namespace SnakeAI
 
                     for (int layer = getLayerCount() - 1; layer >= 1; layer--)
                     {
-                        int we = 0;
-                        for (int u = 0; u < getLayer(layer).getUnitCount(); u++)
+                        for (int currentLayerUnit = 0; currentLayerUnit < getLayer(layer).getUnitCount(); currentLayerUnit++)
                         {
-                            for (int prevu = 0; prevu < getLayer(layer - 1).getUnitCount(); prevu++)
+                            for (int prevLayerUnit = 0; prevLayerUnit < getLayer(layer - 1).getUnitCount(); prevLayerUnit++)
                             {
                                 if (layer == getLayerCount() - 1)
                                 {
-                                    delta[layer][u] = layeroutput[layer][u] * (1 - layeroutput[layer][u]) * (labels[t][u] - layeroutput[layer][u]);
+                                    deltasPerLayer[layer][currentLayerUnit] = layeroutput[layer][currentLayerUnit] * (1 - layeroutput[layer][currentLayerUnit]) * (labels[t][currentLayerUnit] - layeroutput[layer][currentLayerUnit]);
                                 }
                                 else
                                 {
-                                    float weightsum = 0.0f;
-                                    int wen = u;
-                                    for (int unext = 0; unext < getLayer(layer + 1).getUnitCount(); unext++)
+                                    double weightsum = 0.0;
+                                    int wen = currentLayerUnit;
+                                    for (int nextLayerUnit = 0; nextLayerUnit < getLayer(layer + 1).getUnitCount(); nextLayerUnit++)
                                     {
-                                        weightsum += delta[layer + 1][unext] * weights[layer + 1][wen];
+                                        weightsum += deltasPerLayer[layer + 1][nextLayerUnit] * weightsPerLayer[layer + 1][nextLayerUnit, currentLayerUnit];
                                         wen += getLayer(layer).getUnitCount();
                                     }
-                                    delta[layer][u] = layeroutput[layer][u] * (1 - layeroutput[layer][u]) * weightsum;
+                                    deltasPerLayer[layer][currentLayerUnit] = layeroutput[layer][currentLayerUnit] * (1 - layeroutput[layer][currentLayerUnit]) * weightsum;
                                 }
-
-                                weights[layer][we] += learningRate * delta[layer][u] * layeroutput[layer - 1][prevu];
-                                we++;
+                                weightsPerLayer[layer][currentLayerUnit, prevLayerUnit] += learningRate * deltasPerLayer[layer][currentLayerUnit] * layeroutput[layer - 1][prevLayerUnit];
                             }
                         }
                     }

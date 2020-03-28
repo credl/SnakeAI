@@ -8,10 +8,10 @@ namespace SnakeAI
 {
     public class NNUnit
     {
-        public float activation(float input)
+        public double activation(double input)
         {
 //            return (input >= 0 ? 1 : 0);
-            return (float)(1.0 / (1.0 + Math.Pow(Math.E, -input)));
+            return (double)(1.0 / (1.0 + Math.Pow(Math.E, -input)));
         }
     }
 }

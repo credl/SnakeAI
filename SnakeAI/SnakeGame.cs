@@ -234,7 +234,7 @@ namespace SnakeAI
         }
 
         public void simulateToGameOver() {
-            float[] res;
+            double[] res;
             while (!isGameOver()) {
                 recordedpath.AddLast(new System.Drawing.Point(snake[0].X, snake[0].Y));
                 res = network.propagateToEnd(getGameCharacteristics());
@@ -265,9 +265,9 @@ namespace SnakeAI
             return /*survivedSteps +*/ 1000 * snake.Length + movementPoints;
         }
 
-        public float[] getGameCharacteristics()
+        public double[] getGameCharacteristics()
         {
-            float[] characteristics = new float[24];
+            double[] characteristics = new double[24];
 
             int val;
 
@@ -308,7 +308,7 @@ namespace SnakeAI
 
 characteristics[8] = Math.Sign(food.X - snake[0].X);
 characteristics[9] = Math.Sign(food.Y - snake[0].Y);
-characteristics = new float[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X - 1] == false ? 0 : 1, characteristics[8], characteristics[9] };
+characteristics = new double[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X - 1] == false ? 0 : 1, characteristics[8], characteristics[9] };
 
             return characteristics;
         }

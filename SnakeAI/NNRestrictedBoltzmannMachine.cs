@@ -9,9 +9,9 @@ namespace SnakeAI
     class NNRestrictedBoltzmannMachine
     {
         NNLayer visible, hidden;
-        float[,] weights;
-        float[] biasVisible;
-        float[] biasHidden;
+        double[, ] weights;
+        double[] biasVisible;
+        double[] biasHidden;
         Random rnd;
 
         public NNRestrictedBoltzmannMachine(int visibleUnitCnt, int hiddenUnitCnt)
@@ -19,17 +19,17 @@ namespace SnakeAI
             rnd = new Random(System.DateTime.Now.Millisecond);
             visible = new NNLayer(visibleUnitCnt);
             hidden = new NNLayer(hiddenUnitCnt);
-            biasVisible = new float[visibleUnitCnt];
-            biasHidden = new float[hiddenUnitCnt];
-            weights = new float[visibleUnitCnt, hiddenUnitCnt];
+            biasVisible = new double[visibleUnitCnt];
+            biasHidden = new double[hiddenUnitCnt];
+            weights = new double[visibleUnitCnt, hiddenUnitCnt];
         }
 
-        public float[] propagateVisibleToHidden(float[] input)
+        public double[] propagateVisibleToHidden(double[] input)
         {
-            float[] res = new float[hidden.getUnitCount()];
+            double[] res = new double[hidden.getUnitCount()];
             for (int h = 0; h < hidden.getUnitCount(); h++)
             {
-                float hinput = biasHidden[h];
+                double hinput = biasHidden[h];
                 for (int v = 0; v < visible.getUnitCount(); v++)
                 {
                     hinput += input[v] * weights[v, h];
@@ -39,12 +39,12 @@ namespace SnakeAI
             return res;
         }
 
-        public float[] propagateHiddenToVisible(float[] input)
+        public double[] propagateHiddenToVisible(double[] input)
         {
-            float[] res = new float[visible.getUnitCount()];
+            double[] res = new double[visible.getUnitCount()];
             for (int v = 0; v < visible.getUnitCount(); v++)
             {
-                float vinput = biasVisible[v];
+                double vinput = biasVisible[v];
                 for (int h = 0; h < hidden.getUnitCount(); h++)
                 {
                     vinput += input[h] * weights[v, h];
@@ -54,9 +54,9 @@ namespace SnakeAI
             return res;
         }
 
-        public float[] sample(float[] props)
+        public double[] sample(double[] props)
         {
-            float[] res = new float[props.Length];
+            double[] res = new double[props.Length];
             for (int i = 0; i < props.Length; i++)
             {
                 res[i] = (rnd.NextDouble() < props[i] ? 1.0f : 0.0f);
@@ -77,9 +77,9 @@ namespace SnakeAI
             }
         }
 
-        private float[, ] outerProd(float[] a, float[] b)
+        private double[, ] outerProd(double[] a, double[] b)
         {
-            float[, ] res = new float[a.Length, b.Length];
+            double[, ] res = new double[a.Length, b.Length];
             for (int c = 0; c < a.Length; c++) {
                 for (int r = 0; r < b.Length; r++)
                 {
@@ -88,9 +88,9 @@ namespace SnakeAI
             }
             return res;
         }
-        private float[, ] matrixScale(float[, ] a, float factor)
+        private double[, ] matrixScale(double[, ] a, double factor)
         {
-            float[, ] res = new float[a.GetLength(0), a.GetLength(1)];
+            double[, ] res = new double[a.GetLength(0), a.GetLength(1)];
             for (int x = 0; x < a.GetLength(0); x++)
             {
                 for (int y = 0; y < a.GetLength(1); y++)
@@ -101,14 +101,14 @@ namespace SnakeAI
             return res;
         }
 
-        private float[, ] matrixNegate(float[, ] a)
+        private double[, ] matrixNegate(double[, ] a)
         {
             return matrixScale(a, -1);
         }
 
-        private float[, ] matrixAdd(float[, ] a, float[, ] b)
+        private double[, ] matrixAdd(double[, ] a, double[, ] b)
         {
-            float[, ] res = new float[a.GetLength(0), a.GetLength(1)];
+            double[, ] res = new double[a.GetLength(0), a.GetLength(1)];
             for (int x = 0; x < a.GetLength(0); x++)
             {
                 for (int y = 0; y < a.GetLength(1); y++)
@@ -119,32 +119,32 @@ namespace SnakeAI
             return res;
         }
 
-        private float[, ] wrapVectorToMatrix(float[] vector)
+        private double[, ] wrapVectorToMatrix(double[] vector)
         {
-            float[, ] ret = new float[vector.GetLength(0), 1];
+            double[, ] ret = new double[vector.GetLength(0), 1];
             for (int i = 0; i < vector.Length; i++) ret[i, 0] = vector[i];
             return ret;
         }
 
-        private float[] unwrapMatrixToVector(float[, ] matrix)
+        private double[] unwrapMatrixToVector(double[, ] matrix)
         {
-            float[] ret = new float[matrix.GetLength(0)];
+            double[] ret = new double[matrix.GetLength(0)];
             for (int i = 0; i < ret.Length; i++) ret[i] = matrix[i, 0];
             return ret;
         }
 
-        public void train(float[][] trainingset, int epochs = 1, float learningRate = 1.0f)
+        public void train(double[][] trainingset, int epochs = 1, double learningRate = 1.0)
         {
             for (int e = 0; e < epochs; e++)
             {
                 for (int t = 0; t < trainingset.Length; t++)
                 {
-                    float[] hiddenSample = sample(propagateVisibleToHidden(trainingset[t]));
-                    float[, ] posGrad = outerProd(trainingset[t], hiddenSample);
-                    float[] visibleSample = sample(propagateHiddenToVisible(hiddenSample));
-                    float[] hiddenSample2 = sample(propagateVisibleToHidden(visibleSample));
-                    float[, ] negGrad = outerProd(visibleSample, hiddenSample2);
-                    float[, ] deltaW = matrixAdd(posGrad, matrixNegate(negGrad));
+                    double[] hiddenSample = sample(propagateVisibleToHidden(trainingset[t]));
+                    double[, ] posGrad = outerProd(trainingset[t], hiddenSample);
+                    double[] visibleSample = sample(propagateHiddenToVisible(hiddenSample));
+                    double[] hiddenSample2 = sample(propagateVisibleToHidden(visibleSample));
+                    double[, ] negGrad = outerProd(visibleSample, hiddenSample2);
+                    double[, ] deltaW = matrixAdd(posGrad, matrixNegate(negGrad));
 
                     weights = matrixAdd(weights, matrixScale(deltaW, learningRate));
                     biasVisible = unwrapMatrixToVector(matrixAdd(wrapVectorToMatrix(biasVisible), matrixScale(matrixAdd(wrapVectorToMatrix(trainingset[t]), matrixNegate(wrapVectorToMatrix(visibleSample))), learningRate)));

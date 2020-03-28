@@ -50,13 +50,13 @@ namespace SnakeAI
             int u = 0;
             for (int l = 0; l < network.getWeights().Length; l++)
             {
-                u = Math.Max(u, network.getWeights()[l].Length);
+                u = Math.Max(u, network.getWeights()[l].colCount());
             }
             return u;
         }
 
         public void redraw() {
-            float[][] weights = network.getWeights();
+            NNMatrix[] weights = network.getWeights();
             int layerCnt = weights.Length;
 
 
@@ -71,14 +71,13 @@ namespace SnakeAI
 
                 if (l > 0)
                 {
-                    int po = 0;
-                    for (int u = 0; u < network.getLayer(l).getUnitCount(); u++)
+                    for (int currentUnit = 0; currentUnit < network.getLayer(l).getUnitCount(); currentUnit++)
                     {
-                        for (int prevu = 0; prevu < network.getLayer(l - 1).getUnitCount(); prevu++)
+                        for (int prevUnit = 0; prevUnit < network.getLayer(l - 1).getUnitCount(); prevUnit++)
                         {
-                            System.Drawing.Point p1 = getUnitPosition(l - 1, prevu, layerWidth, prevLayerHeight);
-                            System.Drawing.Point p2 = getUnitPosition(l, u, layerWidth, layerHeight);
-                            int weight = (int)(255 * (weights[l][po++]));
+                            System.Drawing.Point p1 = getUnitPosition(l - 1, prevUnit, layerWidth, prevLayerHeight);
+                            System.Drawing.Point p2 = getUnitPosition(l, currentUnit, layerWidth, layerHeight);
+                            int weight = (int)(255 * (weights[l][currentUnit, prevUnit]));
                             weight = Math.Max(0, Math.Min(255, weight));
                             System.Drawing.Pen pen = new Pen(Color.FromArgb(20, weight < 0 ? Math.Abs(weight) : 0, weight >= 0 ? weight : 0, 0), 20.0f * Math.Min(Math.Abs((float)weight) / 255.0f, 1.0f));
                             g.DrawLine(pen, p1, p2);

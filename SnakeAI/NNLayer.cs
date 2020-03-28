@@ -24,9 +24,9 @@ namespace SnakeAI
             return units.Length;
         }
 
-        public float[] propagate(float[] input)
+        public double[] propagate(double[] input)
         {
-            float[] ret = new float[units.Length];
+            double[] ret = new double[units.Length];
             for (int u = 0; u < units.Length; u++)
             {
                 ret[u] = units[u].activation(input[u]);

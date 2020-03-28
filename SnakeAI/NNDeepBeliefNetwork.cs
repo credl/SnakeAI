@@ -19,12 +19,12 @@ namespace SnakeAI
             }
         }
 
-        public float[] propagateToEnd(float[] input) {
+        public double[] propagateToEnd(double[] input) {
             return propagateToLayer(input, rbms.Length);
         }
 
-        public float[] propagateToLayer(float[] input, int layer) {
-            float[] cur = input;
+        public double[] propagateToLayer(double[] input, int layer) {
+            double[] cur = input;
             for (int l = 0; l < layer; l++)
             {
                 cur = rbms[l].sample(rbms[l].propagateVisibleToHidden(cur));
@@ -32,9 +32,9 @@ namespace SnakeAI
             return cur;
         }
 
-        public void train(float[][] trainingset, int layer, int epochs = 1, float learningRate = 1.0f)
+        public void train(double[][] trainingset, int layer, int epochs = 1, double learningRate = 1.0)
         {
-            float[][] trainingsetAtLayer = new float[trainingset.Length][];
+            double[][] trainingsetAtLayer = new double[trainingset.Length][];
             for (int t = 0; t < trainingset.Length; t++)
             {
                 trainingsetAtLayer[t] = propagateToLayer(trainingset[t], layer);

@@ -15,7 +15,6 @@ namespace SnakeAI
         private SnakeGame snake;
         private System.Threading.Thread gameloopThread;
         private int currentMovement;
-        private bool running = true;
         private NNNetwork network;
         private bool stop = false;
 
@@ -66,7 +65,7 @@ namespace SnakeAI
         delegate void RefreshDelegate();
 
         private void gameloop() {
-            float[] res = new float[4];
+            double[] res = new double[4];
             RefreshDelegate refreshDelegate = new RefreshDelegate(refr);
             while (!stop && !snake.isGameOver())
             {

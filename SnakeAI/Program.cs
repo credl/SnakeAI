@@ -15,27 +15,27 @@ namespace SnakeAI
         static void Main()
         {
 
-            float[][] trainingset = new float[][]
+            double[][] trainingset = new double[][]
                 {
-                    new float[]{ 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f },
-                    new float[]{ 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f },
-                    new float[]{ 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-                    new float[]{ 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f },
-                    new float[]{ 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f },
+                    new double[]{ 1.0, 1.0, 1.0, 0.0, 0.0, 0.0 },
+                    new double[]{ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0 },
+                    new double[]{ 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+                    new double[]{ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0 },
+                    new double[]{ 0.0, 0.0, 0.0, 1.0, 0.0, 1.0 },
                 };
-            float[][] labels = new float[][]
+            double[][] labels = new double[][]
                 {
-                    new float[]{ 1, 0 },
-                    new float[]{ 0, 1 },
-                    new float[]{ 1, 0 },
-                    new float[]{ 0, 1 },
-                    new float[]{ 0, 1 },
+                    new double[]{ 1, 0 },
+                    new double[]{ 0, 1 },
+                    new double[]{ 1, 0 },
+                    new double[]{ 0, 1 },
+                    new double[]{ 0, 1 },
                 };
-            float[][] testset = new float[][]
+            double[][] testset = new double[][]
                 {
-                    new float[]{ 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f },
-                    new float[]{ 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f },
-                    new float[]{ 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f },
+                    new double[]{ 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+                    new double[]{ 0.0, 0.0, 0.0, 0.0, 1.0, 1.0 },
+                    new double[]{ 0.0, 1.0, 1.0, 1.0, 1.0, 0.0 },
                 };
             /*
                         NNRestrictedBoltzmannMachine rbm = new NNRestrictedBoltzmannMachine(6, 2);
@@ -51,19 +51,19 @@ namespace SnakeAI
             dbn.train(trainingset, 0, 20000, 0.1f);
             dbn.train(trainingset, 1, 20000, 0.1f);
             dbn.train(trainingset, 2, 20000, 0.1f);
-            float[][] resttrainingset = new float[trainingset.Length][];
+            double[][] resttrainingset = new double[trainingset.Length][];
             for (int t = 0; t < trainingset.Length; t++)
             {
-                float[] classification = dbn.propagateToEnd(trainingset[t]);
+                double[] classification = dbn.propagateToEnd(trainingset[t]);
                 resttrainingset[t] = classification;
             }
 
             NNNetwork net = new NNNetwork(new int[] { 2, 3, 3, 2 });
             net.randomizeWeights();
-            net.bptrain(resttrainingset, labels, 30000, 1.0f);
-            foreach (float[] t in testset)
+            net.bptrain(resttrainingset, labels, 30000, 1.0);
+            foreach (double[] t in testset)
             {
-                float[] classification = net.propagateToEnd(dbn.propagateToEnd(t));
+                double[] classification = net.propagateToEnd(dbn.propagateToEnd(t));
             }
 
             

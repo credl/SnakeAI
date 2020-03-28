@@ -59,7 +59,6 @@ namespace SnakeAI
                 snakes[i].Top = snakes[i].Height * y;
                 snakes[i].moveLeft();
                 snakes[i].Refresh();
-                snakes[i].MouseMove += new MouseEventHandler(Snakes_MouseMove);
                 snakes[i].MouseUp += new MouseEventHandler(Snakes_MouseUp);
                 snakes[i].Tag = i;
                 pnlMain.Controls.Add(snakes[i]);
@@ -99,21 +98,6 @@ namespace SnakeAI
             {
                 new FrmNetworkVisualizer(networks[index]).Show();
             }
-        }
-
-        private void Snakes_MouseMove(object sender, MouseEventArgs e) {
-            int index = (int)((SnakeGame)sender).Tag;
-            float[][] weights = networks[index].getWeights();
-            string str = "";
-            for (int l = 0; l < weights.Length; l++)
-            {
-                for (int u = 0; u < weights[l].Length; u++)
-                {
-                    str += Math.Round(weights[l][u], 1) + ", ";
-                }
-                str += "\r\n";
-            }
-            txtWeights.Text = str;
         }
 
         private void FrmSnake_KeyDown(object sender, KeyEventArgs e)

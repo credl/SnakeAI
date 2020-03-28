@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="NNDeepBeliefNetwork.cs" />
     <Compile Include="NNLayer.cs" />
+    <Compile Include="NNMatrix.cs" />
     <Compile Include="NNNetwork.cs" />
     <Compile Include="NNUnit.cs" />
     <Compile Include="NNRestrictedBoltzmannMachine.cs" />
