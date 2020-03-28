@@ -8,10 +8,16 @@ namespace NeuralNetworks
 {
     public class NNUnit
     {
+        ActivationFunction func;
+
+        public NNUnit(ActivationFunction func)
+        {
+            this.func = func;
+        }
+
         public double activation(double input)
         {
-//            return (input >= 0 ? 1 : 0);
-            return (double)(1.0 / (1.0 + Math.Pow(Math.E, -input)));
+            return func(input);
         }
     }
 }

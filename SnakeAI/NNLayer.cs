@@ -10,12 +10,12 @@ namespace NeuralNetworks
     {
         NNUnit[] units;
 
-        public NNLayer(int cunits)
+        public NNLayer(int cunits, ActivationFunction func)
         {
             units = new NNUnit[cunits];
             for (int i = 0; i < cunits; i++)
             {
-                units[i] = new NNUnit();
+                units[i] = new NNUnit(func);
             }
         }
 

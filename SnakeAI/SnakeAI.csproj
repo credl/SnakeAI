@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivationFunction.cs" />
     <Compile Include="FrmMainMenu.cs">
       <SubType>Form</SubType>
     </Compile>

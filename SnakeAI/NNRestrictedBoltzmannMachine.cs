@@ -17,8 +17,8 @@ namespace NeuralNetworks
         public NNRestrictedBoltzmannMachine(int visibleUnitCnt, int hiddenUnitCnt)
         {
             rnd = new Random(System.DateTime.Now.Millisecond);
-            visible = new NNLayer(visibleUnitCnt);
-            hidden = new NNLayer(hiddenUnitCnt);
+            visible = new NNLayer(visibleUnitCnt, ActivationFunctions.sigmoid);
+            hidden = new NNLayer(hiddenUnitCnt, ActivationFunctions.sigmoid);
             biasVisible = new double[visibleUnitCnt];
             biasHidden = new double[hiddenUnitCnt];
             weights = new NNMatrix(hiddenUnitCnt, visibleUnitCnt);

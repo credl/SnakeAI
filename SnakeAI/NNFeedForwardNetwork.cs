@@ -19,7 +19,7 @@ namespace NeuralNetworks
             weightsPerLayer = new NNMatrix[getLayerCount()];
             for (int layer = 0; layer < getLayerCount(); layer++)
             {
-                layers[layer] = new NNLayer(unitsPerLayer[layer]);
+                layers[layer] = new NNLayer(unitsPerLayer[layer], ActivationFunctions.sigmoid);
                 if (layer == 0)
                 {
                     weightsPerLayer[layer] = new NNMatrix(getLayer(layer).getUnitCount(), getLayer(layer).getUnitCount());

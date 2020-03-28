@@ -61,7 +61,6 @@ namespace SnakeAI
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             net.randomizeWeights();
-
 //            FrmNetworkVisualizer vis = new FrmNetworkVisualizer(net);
 //            vis.Show();
             net.bptrain(resttrainingset, labels, 30000, 1.0);
