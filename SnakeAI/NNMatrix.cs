@@ -9,6 +9,7 @@ namespace NeuralNetworks
     public class NNMatrix
     {
         private double[,] m;
+        private double[,] comp;
 
         public NNMatrix() : this(0, 0)
         {
@@ -16,8 +17,7 @@ namespace NeuralNetworks
 
         public NNMatrix(NNMatrix other)
         {
-            Func<double, double, double> op = (x, y) => x;
-            m = applyOp(other, other, op).m;
+            m = applyOp(other, other, (x, y) => x).m;
         }
 
         public NNMatrix(int cols, int rows) {
@@ -92,25 +92,22 @@ namespace NeuralNetworks
 
         public static NNMatrix operator +(NNMatrix a, NNMatrix b)
         {
-            Func<double, double, double> op = (x, y) => x + y;
-            return applyOp(a, b, op);
+            return applyOp(a, b, (x, y) => x + y);
         }
 
         public static NNMatrix operator -(NNMatrix a, NNMatrix b)
         {
-            Func<double, double, double> op = (x, y) => x - y;
-            return applyOp(a, b, op);
+            return applyOp(a, b, (x, y) => x - y);
         }
 
         public static NNMatrix operator *(NNMatrix a, NNMatrix b)
         {
-            Func<double, double, double> op = (x, y) => x * y;
-            return applyOp(a, b, op);
+            return applyOp(a, b, (x, y) => x * y);
         }
 
-        public static NNMatrix outerProduct(double[] vec1, double[] vec2)
+        public static NNMatrix outerProduct(double[] vec1, double[] vec2, NNMatrix useStorage = null)
         {
-            NNMatrix ret = new NNMatrix(vec2.Length, vec1.Length);
+            NNMatrix ret = (useStorage == null ? new NNMatrix(vec2.Length, vec1.Length) : useStorage);
             for (int c = 0; c < vec2.Length; c++)
             {
                 for (int r = 0; r < vec1.Length; r++)
@@ -135,17 +132,32 @@ namespace NeuralNetworks
             return a * (-1);
         }
 
-        private static NNMatrix applyOp(NNMatrix a, NNMatrix b, Func<double, double, double> op)
+        public void applyOperatorToThis(NNMatrix b, Func<double, double, double> op)
+        {
+            NNMatrix.applyOp(this, b, op);
+        }
+
+        private static NNMatrix applyOp(NNMatrix a, NNMatrix b, Func<double, double, double> op, bool storeToA = false)
         {
             if (a.rowCount() != b.rowCount() || a.colCount() != b.colCount())
             {
                 throw new Exception("Matrices must have the same dimensions");
             }
-            NNMatrix ret = new NNMatrix(a.colCount(), a.rowCount());
-            for (int c = 0; c < a.colCount(); c++)
-                for (int r = 0; r < a.rowCount(); r++)
-                    ret[c, r] = op(a[c, r], b[c, r]);
-            return ret;
+            if (storeToA)
+            {
+                NNMatrix ret = new NNMatrix(a.colCount(), a.rowCount());
+                for (int c = 0; c < a.colCount(); c++)
+                    for (int r = 0; r < a.rowCount(); r++)
+                        ret[c, r] = op(a[c, r], b[c, r]);
+                return ret;
+            }
+            else
+            {
+                for (int c = 0; c < a.colCount(); c++)
+                    for (int r = 0; r < a.rowCount(); r++)
+                        a[c, r] = op(a[c, r], b[c, r]);
+                return a;
+            }
         }
     }
 }

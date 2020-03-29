@@ -269,7 +269,7 @@ namespace SnakeAI
 
         public double[] getGameCharacteristics()
         {
-            double[] characteristics = new double[24];
+            double[] characteristics = new double[10];
 
             int val;
 
@@ -307,10 +307,21 @@ namespace SnakeAI
 
             characteristics[8] = food.X - snake[0].X;
             characteristics[9] = food.Y - snake[0].Y;
+            
 
-characteristics[8] = Math.Sign(food.X - snake[0].X);
-characteristics[9] = Math.Sign(food.Y - snake[0].Y);
-characteristics = new double[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X - 1] == false ? 0 : 1, characteristics[8], characteristics[9] };
+
+            characteristics[8] = Math.Sign(food.X - snake[0].X);
+            characteristics[9] = Math.Sign(food.Y - snake[0].Y);
+            characteristics = new double[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X - 1] == false ? 0 : 1, characteristics[8], characteristics[9] };
+
+
+            // encode as binary
+            string s ="";
+            foreach (double d in characteristics)
+            {
+                s += (d < 0 ? '0' : '1') + Convert.ToString(Math.Abs((int)d), 2).PadLeft(5, '0');
+            }
+            characteristics = s.Select(b => (b == '0' ? 0.0 : 1.0)).ToArray();
 
             return characteristics;
         }

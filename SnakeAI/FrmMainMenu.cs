@@ -26,5 +26,10 @@ namespace SnakeAI
         {
             new FrmTrain().Show();
         }
+
+        private void btnTrainByPlay_Click(object sender, EventArgs e)
+        {
+            new FrmPlay(true).Show();
+        }
     }
 }

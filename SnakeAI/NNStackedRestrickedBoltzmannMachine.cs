@@ -8,7 +8,7 @@ using NeuralNetworks;
 
 namespace NeuralNetworks
 {
-    class NNStackedRestrickedBoltzmannMachine
+    class NNStackedRestrickedBoltzmannMachine : NNNetwork
     {
         NNRestrictedBoltzmannMachine[] rbms;
 
@@ -26,7 +26,7 @@ namespace NeuralNetworks
             return rbms.Length;
         }
 
-        public double[] propagateToEnd(double[] input) {
+        override public double[] propagateToEnd(double[] input) {
             return propagateToLayer(input, rbms.Length);
         }
 

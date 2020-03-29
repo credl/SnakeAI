@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NeuralNetworks
 {
-    class NNDeepBeliefNetwork
+    class NNDeepBeliefNetwork : NNNetwork
     {
         private NNStackedRestrickedBoltzmannMachine unsupervisedNetwork;
         private NNFeedForwardNetwork supervisedNetwork;
@@ -43,7 +43,7 @@ namespace NeuralNetworks
             return supervisedNetwork.getLayerCount();
         }
 
-        public double[] propagateToEnd(double[] inputVec)
+        override public double[] propagateToEnd(double[] inputVec)
         {
             return propagate(inputVec, getLayerCount());
         }

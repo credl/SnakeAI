@@ -66,6 +66,7 @@
       <DependentUpon>FrmPlay.cs</DependentUpon>
     </Compile>
     <Compile Include="NNDeepBeliefNetwork.cs" />
+    <Compile Include="NNNetwork.cs" />
     <Compile Include="NNStackedRestrickedBoltzmannMachine.cs" />
     <Compile Include="NNLayer.cs" />
     <Compile Include="NNMatrix.cs" />

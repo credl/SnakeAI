@@ -17,14 +17,25 @@ namespace SnakeAI
         private SnakeGame snake;
         private System.Threading.Thread gameloopThread;
         private int currentMovement;
-        private NNFeedForwardNetwork network;
+        private NNNetwork network;
         private bool stop = false;
 
-        public FrmPlay()
+        bool trainByPlay = false;
+        LinkedList<double[]> gamechars;
+        LinkedList<double[]> labels;
+
+        public FrmPlay(bool trainByPlay = false)
         {
             InitializeComponent();
 
             initWindow();
+
+            if (trainByPlay)
+            {
+                this.trainByPlay = true;
+                gamechars = new LinkedList<double[]>();
+                labels = new LinkedList<double[]>();
+            }
 
             gameloopThread = new System.Threading.Thread(gameloop);
             gameloopThread.Start();
@@ -67,49 +78,103 @@ namespace SnakeAI
         delegate void RefreshDelegate();
 
         private void gameloop() {
-            double[] res = new double[4];
-            RefreshDelegate refreshDelegate = new RefreshDelegate(refr);
-            while (!stop && !snake.isGameOver())
+            while (!stop)
             {
-                System.Threading.Thread.Sleep(100);
-
-                if (network != null) {
-                    res = network.propagateToEnd(snake.getGameCharacteristics());
-                    if (res[0] >= res[1] && res[0] >= res[2] && res[0] >= res[3])
-                    {
-                        currentMovement = (int)Keys.Up;
-                    }
-                    else if (res[1] >= res[0] && res[1] >= res[2] && res[1] >= res[3])
-                    {
-                        currentMovement = (int)Keys.Left;
-                    }
-                    else if (res[2] >= res[0] && res[2] >= res[1] && res[2] >= res[3])
-                    {
-                        currentMovement = (int)Keys.Down;
-                    }
-                    else if (res[3] >= res[0] && res[3] >= res[1] && res[3] >= res[2])
-                    {
-                        currentMovement = (int)Keys.Right;
-                    }
-                }
-
-                switch (currentMovement)
+                double[] res = new double[4];
+                RefreshDelegate refreshDelegate = new RefreshDelegate(refr);
+                while (!snake.isGameOver())
                 {
-                    case (int)Keys.Left:
-                        snake.moveLeft();
-                        break;
-                    case (int)Keys.Right:
-                        snake.moveRight();
-                        break;
-                    case (int)Keys.Up:
-                        snake.moveUp();
-                        break;
-                    case (int)Keys.Down:
-                        snake.moveDown();
-                        break;
+                    System.Threading.Thread.Sleep(100);
+
+                    if (network != null)
+                    {
+                        double[] gc = snake.getGameCharacteristics();
+                        res = network.propagateToEnd(gc);
+                        if (res[0] >= res[1] && res[0] >= res[2] && res[0] >= res[3])
+                        {
+                            currentMovement = (int)Keys.Up;
+                        }
+                        else if (res[1] >= res[0] && res[1] >= res[2] && res[1] >= res[3])
+                        {
+                            currentMovement = (int)Keys.Left;
+                        }
+                        else if (res[2] >= res[0] && res[2] >= res[1] && res[2] >= res[3])
+                        {
+                            currentMovement = (int)Keys.Down;
+                        }
+                        else if (res[3] >= res[0] && res[3] >= res[1] && res[3] >= res[2])
+                        {
+                            currentMovement = (int)Keys.Right;
+                        }
+                    }
+
+                    switch (currentMovement)
+                    {
+                        case (int)Keys.Up:
+                            if (trainByPlay)
+                            {
+                                gamechars.AddLast(snake.getGameCharacteristics());
+                                labels.AddLast(new double[] { 1.0, 0.0, 0.0, 0.0 });
+                            }
+                            snake.moveUp();
+                            break;
+                        case (int)Keys.Left:
+                            if (trainByPlay)
+                            {
+                                gamechars.AddLast(snake.getGameCharacteristics());
+                                labels.AddLast(new double[] { 0.0, 1.0, 0.0, 0.0 });
+                            }
+                            snake.moveLeft();
+                            break;
+                        case (int)Keys.Down:
+                            if (trainByPlay)
+                            {
+                                gamechars.AddLast(snake.getGameCharacteristics());
+                                labels.AddLast(new double[] { 0.0, 0.0, 1.0, 0.0 });
+                            }
+                            snake.moveDown();
+                            break;
+                        case (int)Keys.Right:
+                            if (trainByPlay)
+                            {
+                                gamechars.AddLast(snake.getGameCharacteristics());
+                                labels.AddLast(new double[] { 0.0, 0.0, 0.0, 1.0 });
+                            }
+                            snake.moveRight();
+                            break;
+                    }
+                    Application.DoEvents();
+                    if (!stop) this.Invoke(refreshDelegate);
                 }
-                Application.DoEvents();
-                if (!stop) this.Invoke(refreshDelegate);
+
+                if (trainByPlay)
+                {
+                    MessageBox.Show("Learning ...");
+
+                    double[][] ar_trainingset = gamechars.ToArray();
+                    double[][] ar_labels = labels.ToArray();
+
+                    /*
+                    network = new NNDeepBeliefNetwork(new int[] { ar_trainingset[0].Length, 10 }, new int[] { 10, 5, 4 });
+                    for (int i = 0; i < ((NNDeepBeliefNetwork)network).getUnsupervisedLayerCount(); i++)
+                    {
+                        ((NNDeepBeliefNetwork)network).trainUnsupervised(ar_trainingset, i, 5000, 1.0);
+                    }
+                    ((NNDeepBeliefNetwork)network).trainSupervised(ar_trainingset, ar_labels, 1000, 1.0);
+                    */
+
+                    
+                    network = new NNFeedForwardNetwork(new int[] { ar_trainingset[0].Length, 5, 4 });
+                    ((NNFeedForwardNetwork)network).randomizeWeights();
+                    ((NNFeedForwardNetwork)network).bptrain(ar_trainingset, ar_labels, 1000, 1.0f);
+                    
+
+                    //                new FrmNetworkVisualizer(((NNDeepBeliefNetwork)network).getSupervisedNetwork()).Show();
+
+                    MessageBox.Show("Learning finished. Playing ...");
+                    trainByPlay = false;
+                }
+                snake.restart();
             }
         }
 
