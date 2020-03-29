@@ -39,7 +39,6 @@ namespace NeuralNetworks
             callUpdateCallbacks();
         }
 
-
         public NNFeedForwardNetwork(int[] unitsPerLayer, NNMatrix[] weightsPerLayer) : this(unitsPerLayer)
         {
             setWeights(weightsPerLayer);
