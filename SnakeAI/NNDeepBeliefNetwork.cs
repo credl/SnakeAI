@@ -4,44 +4,79 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using NeuralNetworks;
-
-namespace SnakeAI
+namespace NeuralNetworks
 {
     class NNDeepBeliefNetwork
     {
-        NNRestrictedBoltzmannMachine[] rbms;
+        private NNStackedRestrickedBoltzmannMachine unsupervisedNetwork;
+        private NNFeedForwardNetwork supervisedNetwork;
 
-        public NNDeepBeliefNetwork(int[] unitsPerLayer) {
-            rbms = new NNRestrictedBoltzmannMachine[unitsPerLayer.Length - 1];
-
-            for (int l = 0; l < unitsPerLayer.Length - 1; l++)
-            {
-                rbms[l] = new NNRestrictedBoltzmannMachine(unitsPerLayer[l], unitsPerLayer[l + 1]);
-            }
-        }
-
-        public double[] propagateToEnd(double[] input) {
-            return propagateToLayer(input, rbms.Length);
-        }
-
-        public double[] propagateToLayer(double[] input, int layer) {
-            double[] cur = input;
-            for (int l = 0; l < layer; l++)
-            {
-                cur = rbms[l].sample(rbms[l].propagateVisibleToHidden(cur));
-            }
-            return cur;
-        }
-
-        public void train(double[][] trainingset, int layer, int epochs = 1, double learningRate = 1.0)
+        public NNDeepBeliefNetwork(int[] unitsPerUnsuperviesLayer, int[] unitsPerSuperviesLayer)
         {
-            double[][] trainingsetAtLayer = new double[trainingset.Length][];
+            unsupervisedNetwork = new NNStackedRestrickedBoltzmannMachine(unitsPerUnsuperviesLayer);
+            supervisedNetwork = new NNFeedForwardNetwork(unitsPerSuperviesLayer);
+            supervisedNetwork.randomizeWeights();
+        }
+
+        public NNStackedRestrickedBoltzmannMachine getUnsupervisedNetwork()
+        {
+            return unsupervisedNetwork;
+        }
+
+        public NNFeedForwardNetwork getSupervisedNetwork()
+        {
+            return supervisedNetwork;
+        }
+
+        public int getLayerCount()
+        {
+            return getUnsupervisedLayerCount() + getSupervisedLayerCount();
+        }
+
+        public int getUnsupervisedLayerCount()
+        {
+            return unsupervisedNetwork.getLayerCount();
+        }
+
+        public int getSupervisedLayerCount()
+        {
+            return supervisedNetwork.getLayerCount();
+        }
+
+        public double[] propagateToEnd(double[] inputVec)
+        {
+            return propagate(inputVec, getLayerCount());
+        }
+
+        public double[] propagateToUnsupervisedEnd(double[] inputVec)
+        {
+            return propagate(inputVec, getUnsupervisedLayerCount());
+        }
+
+        public double[] propagate(double[] inputVec, int propagateToOutputOfLayer)
+        {
+            if (propagateToOutputOfLayer < unsupervisedNetwork.getLayerCount()) return unsupervisedNetwork.propagateToLayer(inputVec, propagateToOutputOfLayer);
+            else return supervisedNetwork.propagate(unsupervisedNetwork.propagateToEnd(inputVec), propagateToOutputOfLayer - getUnsupervisedLayerCount());
+        }
+
+        public double[][] propagateToUnsupervisedEnd(double[][] trainingset)
+        {
+            double[][] modtrainingset = new double[trainingset.Length][];
             for (int t = 0; t < trainingset.Length; t++)
             {
-                trainingsetAtLayer[t] = propagateToLayer(trainingset[t], layer);
+                modtrainingset[t] = propagateToUnsupervisedEnd(trainingset[t]);
             }
-            rbms[layer].train(trainingsetAtLayer, epochs, learningRate);
+            return modtrainingset;
+        }
+
+        public void trainUnsupervised(double[][] trainingset, int layer, int epochs = 1, double learningRate = 1.0)
+        {
+            unsupervisedNetwork.train(trainingset, layer, epochs, learningRate);
+        }
+
+        public void trainSupervised(double[][] trainingset, double[][] labels, int epochs = 1, double learningRate = 1.0)
+        {
+            supervisedNetwork.bptrain(propagateToUnsupervisedEnd(trainingset), labels, epochs, learningRate);
         }
     }
 }
