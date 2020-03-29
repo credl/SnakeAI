@@ -8,6 +8,6 @@ namespace NeuralNetworks
 {
     public abstract class NNNetwork
     {
-        public abstract double[] propagateToEnd(double[] inputVec);
+        public abstract double[] propagateToEnd(double[] inputVec, double[] storage = null);
     }
 }

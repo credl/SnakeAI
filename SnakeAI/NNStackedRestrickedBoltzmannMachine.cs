@@ -11,13 +11,16 @@ namespace NeuralNetworks
     class NNStackedRestrickedBoltzmannMachine : NNNetwork
     {
         NNRestrictedBoltzmannMachine[] rbms;
+        double[][] outputOfRBM;
 
         public NNStackedRestrickedBoltzmannMachine(int[] unitsPerLayer) {
             rbms = new NNRestrictedBoltzmannMachine[unitsPerLayer.Length - 1];
 
-            for (int l = 0; l < unitsPerLayer.Length - 1; l++)
+            outputOfRBM = new double[unitsPerLayer.Length][];
+            for (int layer = 0; layer < unitsPerLayer.Length - 1; layer++)
             {
-                rbms[l] = new NNRestrictedBoltzmannMachine(unitsPerLayer[l], unitsPerLayer[l + 1]);
+                rbms[layer] = new NNRestrictedBoltzmannMachine(unitsPerLayer[layer], unitsPerLayer[layer + 1]);
+                outputOfRBM[layer] = new double[unitsPerLayer[layer + 1]];
             }
         }
 
@@ -26,26 +29,32 @@ namespace NeuralNetworks
             return rbms.Length;
         }
 
-        override public double[] propagateToEnd(double[] input) {
-            return propagateToLayer(input, rbms.Length);
+        override public double[] propagateToEnd(double[] input, double[] storage = null) {
+            return propagateToLayer(input, rbms.Length, storage);
         }
 
-        public double[] propagateToLayer(double[] input, int layer) {
+        public double[] propagateToLayer(double[] input, int layer, double[] storage = null) {
             double[] cur = input;
             for (int l = 0; l < layer; l++)
             {
-                cur = rbms[l].sample(rbms[l].propagateVisibleToHidden(cur));
+                cur = rbms[l].sample(rbms[l].propagateVisibleToHidden(cur, outputOfRBM[l]), outputOfRBM[l]);
             }
-            return cur;
+            double[] ret = (storage == null ? new double[cur.Length] : storage);
+            for (int i = 0; i < ret.Length; i++) ret[i] = cur[i];
+            return ret;
         }
 
         public void train(double[][] trainingset, int layer, int epochs = 1, double learningRate = 1.0)
         {
             double[][] trainingsetAtLayer = new double[trainingset.Length][];
-            for (int t = 0; t < trainingset.Length; t++)
+            Parallel.For(0, trainingset.Length, t =>
             {
                 trainingsetAtLayer[t] = propagateToLayer(trainingset[t], layer);
-            }
+            });
+//            for (int t = 0; t < trainingset.Length; t++)
+//            {
+//                trainingsetAtLayer[t] = propagateToLayer(trainingset[t], layer);
+//            }
             rbms[layer].train(trainingsetAtLayer, epochs, learningRate);
         }
     }

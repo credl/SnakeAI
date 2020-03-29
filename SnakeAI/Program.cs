@@ -70,7 +70,8 @@ namespace SnakeAI
                         }
             //            Application.Run(vis);
             */
-/*
+
+            /*
             NNDeepBeliefNetwork dbn = new NNDeepBeliefNetwork(new int[] { 6, 4, 4, 2 }, new int[] { 2, 10, 10, 2 });
             dbn.trainUnsupervised(trainingset, 0, 20000, 1.0f);
             dbn.trainUnsupervised(trainingset, 1, 20000, 1.0f);
@@ -80,7 +81,7 @@ namespace SnakeAI
             {
                 double[] classification = dbn.propagateToEnd(t);
             }
-*/
+            */
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

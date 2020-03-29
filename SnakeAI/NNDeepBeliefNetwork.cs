@@ -43,9 +43,9 @@ namespace NeuralNetworks
             return supervisedNetwork.getLayerCount();
         }
 
-        override public double[] propagateToEnd(double[] inputVec)
+        override public double[] propagateToEnd(double[] inputVec, double[] storage = null)
         {
-            return propagate(inputVec, getLayerCount());
+            return propagate(inputVec, getLayerCount(), storage);
         }
 
         public double[] propagateToUnsupervisedEnd(double[] inputVec)
@@ -53,7 +53,7 @@ namespace NeuralNetworks
             return propagate(inputVec, getUnsupervisedLayerCount());
         }
 
-        public double[] propagate(double[] inputVec, int propagateToOutputOfLayer)
+        public double[] propagate(double[] inputVec, int propagateToOutputOfLayer, double[] storage = null)
         {
             if (propagateToOutputOfLayer < unsupervisedNetwork.getLayerCount()) return unsupervisedNetwork.propagateToLayer(inputVec, propagateToOutputOfLayer);
             else return supervisedNetwork.propagate(unsupervisedNetwork.propagateToEnd(inputVec), propagateToOutputOfLayer - getUnsupervisedLayerCount());
@@ -76,7 +76,7 @@ namespace NeuralNetworks
 
         public void trainSupervised(double[][] trainingset, double[][] labels, int epochs = 1, double learningRate = 1.0)
         {
-            supervisedNetwork.bptrain(propagateToUnsupervisedEnd(trainingset), labels, epochs, learningRate);
+            supervisedNetwork.train(propagateToUnsupervisedEnd(trainingset), labels, epochs, learningRate);
         }
     }
 }

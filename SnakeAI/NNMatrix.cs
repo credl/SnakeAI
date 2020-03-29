@@ -8,8 +8,7 @@ namespace NeuralNetworks
 {
     public class NNMatrix
     {
-        private double[,] m;
-        private double[,] comp;
+        private double[, ] m;
 
         public NNMatrix() : this(0, 0)
         {
@@ -108,22 +107,35 @@ namespace NeuralNetworks
         public static NNMatrix outerProduct(double[] vec1, double[] vec2, NNMatrix useStorage = null)
         {
             NNMatrix ret = (useStorage == null ? new NNMatrix(vec2.Length, vec1.Length) : useStorage);
-            for (int c = 0; c < vec2.Length; c++)
+            Parallel.For(0, vec2.Length, c =>
             {
                 for (int r = 0; r < vec1.Length; r++)
+
                 {
                     ret[c, r] = vec1[r] * vec2[c];
                 }
-            }
+            });
+//            for (int c = 0; c < vec2.Length; c++)
+//            {
+//                for (int r = 0; r < vec1.Length; r++)
+//                {
+//                    ret[c, r] = vec1[r] * vec2[c];
+//                }
+//            }
             return ret;
         }
 
         public static NNMatrix operator *(NNMatrix a, double f)
         {
-            NNMatrix ret = new NNMatrix(a.colCount(), a.rowCount());
-            for (int c = 0; c < a.colCount(); c++)
+            NNMatrix ret =  new NNMatrix(a.colCount(), a.rowCount());
+            Parallel.For(0, a.colCount(), c =>
+            {
                 for (int r = 0; r < a.rowCount(); r++)
                     ret[c, r] = a[c, r] * f;
+            });
+            //            for (int c = 0; c < a.colCount(); c++)
+            //                for (int r = 0; r < a.rowCount(); r++)
+            //                    ret[c, r] = a[c, r] * f;
             return ret;
         }
 
@@ -134,7 +146,12 @@ namespace NeuralNetworks
 
         public void applyOperatorToThis(NNMatrix b, Func<double, double, double> op)
         {
-            NNMatrix.applyOp(this, b, op);
+            NNMatrix.applyOp(this, b, op, true);
+        }
+
+        public void applyOperatorToThis(NNMatrix b, NNMatrix c, Func<double, double, double, double> op)
+        {
+            NNMatrix.applyOp(this, b, c, op, true);
         }
 
         private static NNMatrix applyOp(NNMatrix a, NNMatrix b, Func<double, double, double> op, bool storeToA = false)
@@ -143,21 +160,34 @@ namespace NeuralNetworks
             {
                 throw new Exception("Matrices must have the same dimensions");
             }
-            if (storeToA)
+            NNMatrix ret = (storeToA ? a : new NNMatrix(a.colCount(), a.rowCount()));
+            Parallel.For(0, a.colCount(), c =>
             {
-                NNMatrix ret = new NNMatrix(a.colCount(), a.rowCount());
-                for (int c = 0; c < a.colCount(); c++)
-                    for (int r = 0; r < a.rowCount(); r++)
-                        ret[c, r] = op(a[c, r], b[c, r]);
-                return ret;
-            }
-            else
+                for (int r = 0; r < a.rowCount(); r++)
+                    ret[c, r] = op(a[c, r], b[c, r]);
+            });
+//                for (int c = 0; c < a.colCount(); c++)
+//                    for (int r = 0; r < a.rowCount(); r++)
+//                        ret[c, r] = op(a[c, r], b[c, r]);
+            return ret;
+        }
+
+        private static NNMatrix applyOp(NNMatrix a, NNMatrix b, NNMatrix c, Func<double, double, double, double> op, bool storeToA = false)
+        {
+            if (a.rowCount() != b.rowCount() || a.colCount() != b.colCount() || a.rowCount() != c.rowCount() || a.colCount() != c.colCount())
             {
-                for (int c = 0; c < a.colCount(); c++)
-                    for (int r = 0; r < a.rowCount(); r++)
-                        a[c, r] = op(a[c, r], b[c, r]);
-                return a;
+                throw new Exception("Matrices must have the same dimensions");
             }
+            NNMatrix ret = (storeToA ? a : new NNMatrix(a.colCount(), a.rowCount()));
+            Parallel.For(0, a.colCount(), cc =>
+            {
+                for (int r = 0; r < a.rowCount(); r++)
+                    ret[cc, r] = op(a[cc, r], b[cc, r], c[cc, r]);
+            });
+            //                for (int cc = 0; cc < a.colCount(); cc++)
+            //                    for (int r = 0; r < a.rowCount(); r++)
+            //                        ret[cc, r] = op(a[cc, r], b[cc, r],  c[cc, r]);
+            return ret;
         }
     }
 }

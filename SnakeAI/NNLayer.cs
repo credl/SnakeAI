@@ -9,6 +9,7 @@ namespace NeuralNetworks
     public class NNLayer
     {
         NNUnit[] units;
+        double[] propagateRet;
 
         public NNLayer(int cunits, ActivationFunction func)
         {
@@ -17,6 +18,7 @@ namespace NeuralNetworks
             {
                 units[i] = new NNUnit(func);
             }
+            propagateRet = new double[units.Length];
         }
 
         public int getUnitCount()
@@ -26,12 +28,11 @@ namespace NeuralNetworks
 
         public double[] propagate(double[] input)
         {
-            double[] ret = new double[units.Length];
             for (int u = 0; u < units.Length; u++)
             {
-                ret[u] = units[u].activation(input[u]);
+                propagateRet[u] = units[u].activation(input[u]);
             }
-            return ret;
+            return propagateRet;
         }
 
         public NNUnit getUnit(int i)

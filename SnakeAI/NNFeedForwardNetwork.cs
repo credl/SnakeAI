@@ -13,6 +13,7 @@ namespace NeuralNetworks
         NNMatrix[] weightsPerLayer;
         LinkedList<NNUpdateCallback> updateCallbacks = new LinkedList<NNUpdateCallback>();
         double[][] weightedinputOfLayer;
+        Random rnd;
 
         public NNFeedForwardNetwork(int[] unitsPerLayer)
         {
@@ -36,6 +37,8 @@ namespace NeuralNetworks
                     weightsPerLayer[layer] = new NNMatrix(getLayer(layer).getUnitCount(), getLayer(layer - 1).getUnitCount());
                 }
             }
+            System.Threading.Thread.Sleep(1);
+            rnd = new Random(System.DateTime.Now.Millisecond);
             callUpdateCallbacks();
         }
 
@@ -71,8 +74,6 @@ namespace NeuralNetworks
 
         public void randomizeWeights()
         {
-            System.Threading.Thread.Sleep(1);
-            Random rnd = new Random(System.DateTime.Now.Millisecond);
             for (int layer = 1; layer < getLayerCount(); layer++)
             {
                 for (int r = 0; r < weightsPerLayer[layer].rowCount(); r++)
@@ -88,8 +89,6 @@ namespace NeuralNetworks
 
         public void randomizeWeightsInc(double maxChange, double changeProp = 0.1f)
         {
-            System.Threading.Thread.Sleep(1);
-            Random rnd = new Random(System.DateTime.Now.Millisecond);
             for (int layer = 1; layer < getLayerCount(); layer++)
             {
                 for (int r = 0; r < weightsPerLayer[layer].rowCount(); r++)
@@ -108,8 +107,6 @@ namespace NeuralNetworks
 
         public void randomizeSingleWeightsInc(double maxChange)
         {
-            System.Threading.Thread.Sleep(1);
-            Random rnd = new Random(System.DateTime.Now.Millisecond);
             int l = (int)(getLayerCount() * rnd.NextDouble());
             int r = (int)(weightsPerLayer[l].rowCount() * rnd.NextDouble());
             int c = (int)(weightsPerLayer[l].colCount() * rnd.NextDouble());
@@ -117,12 +114,12 @@ namespace NeuralNetworks
             callUpdateCallbacks();
         }
 
-        override public double[] propagateToEnd(double[] inputVec)
+        override public double[] propagateToEnd(double[] inputVec, double[] storage = null)
         {
-            return propagate(inputVec, layers.Length);
+            return propagate(inputVec, layers.Length, 0, storage);
         }
 
-        public double[] propagate(double[] inputVec, int propagateToOutputOfLayer, int propagateFromOutputOfLayer = 0)
+        public double[] propagate(double[] inputVec, int propagateToOutputOfLayer, int propagateFromOutputOfLayer = 0, double[] storage = null)
         {
             double[] prevoutput = inputVec;
             for (int layer = propagateFromOutputOfLayer; layer < propagateToOutputOfLayer; layer++)
@@ -137,7 +134,9 @@ namespace NeuralNetworks
                 }
                 prevoutput = layers[layer].propagate(weightedinputOfLayer[layer]);
             }
-            return prevoutput;
+            double[] ret = (storage == null ? new double[prevoutput.Length] : storage);
+            for (int i = 0; i < ret.Length; i++) ret[i] = prevoutput[i];
+            return ret;
         }
 
         private double qerror(double[] target, double[] prediction)
@@ -151,34 +150,40 @@ namespace NeuralNetworks
             return err;
         }
 
-        public void bptrain(double[][] trainingset, double[][] labels, int epochs = 1, double learningRate = 1.0)
+        public void train(double[][] trainingset, double[][] labels, int epochs = 1, double learningRate = 1.0)
         {
             double[][] deltasPerLayer = new double[getLayerCount()][];
             double[][] layeroutput = new double[getLayerCount()][];
+            double[] prediction = new double[getLayer(getLayerCount() - 1).getUnitCount()];
 
-            for (int layer = 0; layer < getLayerCount(); layer++)
+            double qerr;
+            double weightsum;
+            int e, t, layer, currentLayerUnit, prevLayerUnit, nextLayerUnit;
+
+            for (layer = 0; layer < getLayerCount(); layer++)
             {
                 deltasPerLayer[layer] = new double[getLayer(layer).getUnitCount()];
+                layeroutput[layer] = new double[getLayer(layer).getUnitCount()];
             }
 
-            for (int e = 0; e < epochs; e++)
+            for (e = 0; e < epochs; e++)
             {
-                for (int t = 0; t < trainingset.Length; t++)
+                for (t = 0; t < trainingset.Length; t++)
                 {
-                    double[] prediction = propagateToEnd(trainingset[t]);
-                    double qerr = qerror(labels[t], prediction);
+                    propagateToEnd(trainingset[t], prediction);
+                    qerr = qerror(labels[t], prediction);
 
-                    for (int layer = 0; layer < getLayerCount(); layer++)
+                    for (layer = 0; layer < getLayerCount(); layer++)
                     {
-                        if (layer == 0) layeroutput[layer] = propagate(trainingset[t], layer + 1);
-                        else layeroutput[layer] = propagate(layeroutput[layer - 1], layer + 1, layer);
+                        if (layer == 0) propagate(trainingset[t], layer + 1, 0, layeroutput[layer]);
+                        else propagate(layeroutput[layer - 1], layer + 1, layer, layeroutput[layer]);
                     }
 
-                    for (int layer = getLayerCount() - 1; layer >= 1; layer--)
+                    for (layer = getLayerCount() - 1; layer >= 1; layer--)
                     {
-                        for (int currentLayerUnit = 0; currentLayerUnit < getLayer(layer).getUnitCount(); currentLayerUnit++)
+                        for (currentLayerUnit = 0; currentLayerUnit < getLayer(layer).getUnitCount(); currentLayerUnit++)
                         {
-                            for (int prevLayerUnit = 0; prevLayerUnit < getLayer(layer - 1).getUnitCount(); prevLayerUnit++)
+                            for (prevLayerUnit = 0; prevLayerUnit < getLayer(layer - 1).getUnitCount(); prevLayerUnit++)
                             {
                                 if (layer == getLayerCount() - 1)
                                 {
@@ -186,8 +191,8 @@ namespace NeuralNetworks
                                 }
                                 else
                                 {
-                                    double weightsum = 0.0;
-                                    for (int nextLayerUnit = 0; nextLayerUnit < getLayer(layer + 1).getUnitCount(); nextLayerUnit++)
+                                    weightsum = 0.0;
+                                    for (nextLayerUnit = 0; nextLayerUnit < getLayer(layer + 1).getUnitCount(); nextLayerUnit++)
                                     {
                                         weightsum += deltasPerLayer[layer + 1][nextLayerUnit] * weightsPerLayer[layer + 1][nextLayerUnit, currentLayerUnit];
                                     }
