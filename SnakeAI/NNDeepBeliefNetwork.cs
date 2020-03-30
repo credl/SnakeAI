@@ -15,6 +15,7 @@ namespace NeuralNetworks
         {
             unsupervisedNetwork = new NNStackedRestrickedBoltzmannMachine(unitsPerUnsuperviesLayer);
             supervisedNetwork = new NNFeedForwardNetwork(unitsPerSuperviesLayer);
+            unsupervisedNetwork.randomizeWeights();
             supervisedNetwork.randomizeWeights();
         }
 

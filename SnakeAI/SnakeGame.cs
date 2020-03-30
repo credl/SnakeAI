@@ -314,7 +314,7 @@ namespace SnakeAI
             characteristics[9] = Math.Sign(food.Y - snake[0].Y);
             characteristics = new double[] { snake[0].X > 0 && occupiedCells[snake[0].Y][snake[0].X - 1] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X - 1] == false ? 0 : 1, snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y > 0 && occupiedCells[snake[0].Y - 1][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && occupiedCells[snake[0].Y][snake[0].X + 1] == false ? 0 : 1, snake[0].X < cellsX - 1 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X + 1] == false ? 0 : 1, snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X] == false ? 0 : 1, snake[0].X > 0 && snake[0].Y < cellsY - 1 && occupiedCells[snake[0].Y + 1][snake[0].X - 1] == false ? 0 : 1, characteristics[8], characteristics[9] };
 
-
+/*
             // encode as binary
             string s ="";
             foreach (double d in characteristics)
@@ -322,6 +322,21 @@ namespace SnakeAI
                 s += (d < 0 ? '0' : '1') + Convert.ToString(Math.Abs((int)d), 2).PadLeft(5, '0');
             }
             characteristics = s.Select(b => (b == '0' ? 0.0 : 1.0)).ToArray();
+*/
+
+/*
+int cc = 0;
+characteristics = new double[cellsX * cellsY * 3];
+for (int y = 0; y < cellsY; y++)
+{
+    for (int x = 0; x < cellsX; x++)
+    {
+        characteristics[cc++] = occupiedCells[y][x] ? 1.0 : 0.0;
+        characteristics[cc++] = (food.X == x && food.Y == y ? 1.0 : 0.0);
+        characteristics[cc++] = (snake[0].X == x && snake[0].Y == y ? 1.0 : 0.0);
+    }
+}
+*/
 
             return characteristics;
         }

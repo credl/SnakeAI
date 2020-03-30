@@ -107,21 +107,21 @@ namespace NeuralNetworks
         public static NNMatrix outerProduct(double[] vec1, double[] vec2, NNMatrix useStorage = null)
         {
             NNMatrix ret = (useStorage == null ? new NNMatrix(vec2.Length, vec1.Length) : useStorage);
-            Parallel.For(0, vec2.Length, c =>
-            {
-                for (int r = 0; r < vec1.Length; r++)
-
-                {
-                    ret[c, r] = vec1[r] * vec2[c];
-                }
-            });
-//            for (int c = 0; c < vec2.Length; c++)
+//return ret;
+//            Parallel.For(0, vec2.Length, c =>
 //            {
 //                for (int r = 0; r < vec1.Length; r++)
 //                {
 //                    ret[c, r] = vec1[r] * vec2[c];
 //                }
-//            }
+//            });
+            for (int c = 0; c < vec2.Length; c++)
+            {
+                for (int r = 0; r < vec1.Length; r++)
+                {
+                    ret[c, r] = vec1[r] * vec2[c];
+                }
+            }
             return ret;
         }
 
@@ -161,14 +161,14 @@ namespace NeuralNetworks
                 throw new Exception("Matrices must have the same dimensions");
             }
             NNMatrix ret = (storeToA ? a : new NNMatrix(a.colCount(), a.rowCount()));
-            Parallel.For(0, a.colCount(), c =>
-            {
+//            Parallel.For(0, a.colCount(), c =>
+//            {
+//                for (int r = 0; r < a.rowCount(); r++)
+//                    ret[c, r] = op(a[c, r], b[c, r]);
+//            });
+            for (int c = 0; c < a.colCount(); c++)
                 for (int r = 0; r < a.rowCount(); r++)
                     ret[c, r] = op(a[c, r], b[c, r]);
-            });
-//                for (int c = 0; c < a.colCount(); c++)
-//                    for (int r = 0; r < a.rowCount(); r++)
-//                        ret[c, r] = op(a[c, r], b[c, r]);
             return ret;
         }
 
@@ -179,14 +179,15 @@ namespace NeuralNetworks
                 throw new Exception("Matrices must have the same dimensions");
             }
             NNMatrix ret = (storeToA ? a : new NNMatrix(a.colCount(), a.rowCount()));
-            Parallel.For(0, a.colCount(), cc =>
-            {
+//return ret;
+//            Parallel.For(0, a.colCount(), cc =>
+//            {
+//                for (int r = 0; r < a.rowCount(); r++)
+//                    ret[cc, r] = op(a[cc, r], b[cc, r], c[cc, r]);
+//            });
+            for (int cc = 0; cc < a.colCount(); cc++)
                 for (int r = 0; r < a.rowCount(); r++)
-                    ret[cc, r] = op(a[cc, r], b[cc, r], c[cc, r]);
-            });
-            //                for (int cc = 0; cc < a.colCount(); cc++)
-            //                    for (int r = 0; r < a.rowCount(); r++)
-            //                        ret[cc, r] = op(a[cc, r], b[cc, r],  c[cc, r]);
+                    ret[cc, r] = op(a[cc, r], b[cc, r],  c[cc, r]);
             return ret;
         }
     }

@@ -19,6 +19,7 @@ namespace SnakeAI
         private int currentMovement;
         private NNNetwork network;
         private bool stop = false;
+        private bool quit = false;
 
         bool trainByPlay = false;
         LinkedList<double[]> gamechars;
@@ -72,6 +73,9 @@ namespace SnakeAI
                 case (int)Keys.Down:
                     currentMovement = e.KeyValue;
                     break;
+                case (int)Keys.Escape:
+                    quit = true;
+                    break;
             }
         }
 
@@ -82,7 +86,7 @@ namespace SnakeAI
             {
                 double[] res = new double[4];
                 RefreshDelegate refreshDelegate = new RefreshDelegate(refr);
-                while (!snake.isGameOver())
+                while (!snake.isGameOver() && !quit)
                 {
                     System.Threading.Thread.Sleep(100);
 
@@ -155,25 +159,29 @@ namespace SnakeAI
                     double[][] ar_labels = labels.ToArray();
 
                     /*
-                    network = new NNDeepBeliefNetwork(new int[] { ar_trainingset[0].Length, 20, 10 }, new int[] { 10, 5, 4 });
+                    network = new NNDeepBeliefNetwork(new int[] { ar_trainingset[0].Length, 20, 4 }, new int[] { 4, 4 });
                     for (int i = 0; i < ((NNDeepBeliefNetwork)network).getUnsupervisedLayerCount(); i++)
                     {
-                        ((NNDeepBeliefNetwork)network).trainUnsupervised(ar_trainingset, i, 100, 1.0);
+                        ((NNDeepBeliefNetwork)network).trainUnsupervised(ar_trainingset, i, 10000, 0.1);
                     }
-                    ((NNDeepBeliefNetwork)network).trainSupervised(ar_trainingset, ar_labels, 100, 1.0);
+                    ((NNDeepBeliefNetwork)network).trainSupervised(ar_trainingset, ar_labels, 1000, 1.0);
                     */
 
-                    
+                    network = new NNAccordInterface(new int[] { ar_trainingset[0].Length, 10, 5, 4 });
+                    ((NNAccordInterface)network).train(ar_trainingset, ar_labels, 10000, 0.1);
+
+                    /*
                     network = new NNFeedForwardNetwork(new int[] { ar_trainingset[0].Length, 5, 4 });
                     ((NNFeedForwardNetwork)network).randomizeWeights();
                     ((NNFeedForwardNetwork)network).train(ar_trainingset, ar_labels, 1000, 1.0f);
-                    
+                    */
 
 
                     //                new FrmNetworkVisualizer(((NNDeepBeliefNetwork)network).getSupervisedNetwork()).Show();
 
                     MessageBox.Show("Learning finished. Playing ...");
                     trainByPlay = false;
+                    quit = false;
                 }
                 snake.restart();
             }

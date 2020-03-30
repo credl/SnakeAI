@@ -13,6 +13,7 @@ namespace NeuralNetworks
         NNMatrix[] weightsPerLayer;
         LinkedList<NNUpdateCallback> updateCallbacks = new LinkedList<NNUpdateCallback>();
         double[][] weightedinputOfLayer;
+        double[][] outputOfLayer;
         Random rnd;
 
         public NNFeedForwardNetwork(int[] unitsPerLayer)
@@ -20,10 +21,12 @@ namespace NeuralNetworks
             layers = new NNLayer[unitsPerLayer.Length];
             weightsPerLayer = new NNMatrix[getLayerCount()];
             weightedinputOfLayer = new double[getLayerCount()][];
+            outputOfLayer = new double[getLayerCount()][];
             for (int layer = 0; layer < getLayerCount(); layer++)
             {
                 layers[layer] = new NNLayer(unitsPerLayer[layer], ActivationFunctions.sigmoid);
                 weightedinputOfLayer[layer] = new double[layers[layer].getUnitCount()];
+                outputOfLayer[layer] = new double[layers[layer].getUnitCount()];
                 if (layer == 0)
                 {
                     weightsPerLayer[layer] = new NNMatrix(getLayer(layer).getUnitCount(), getLayer(layer).getUnitCount());
@@ -126,13 +129,13 @@ namespace NeuralNetworks
             {
                 for (int currentLayerUnit = 0; currentLayerUnit < layers[layer].getUnitCount(); currentLayerUnit++)
                 {
-                    weightedinputOfLayer[layer][currentLayerUnit] = 0;
+                    weightedinputOfLayer[layer][currentLayerUnit] = 0.0;
                     for (int prevLayerUnit = 0; prevLayerUnit < weightsPerLayer[layer].rowCount(); prevLayerUnit++)
                     {
                         weightedinputOfLayer[layer][currentLayerUnit] += prevoutput[prevLayerUnit] * weightsPerLayer[layer][currentLayerUnit, prevLayerUnit];
                     }
                 }
-                prevoutput = layers[layer].propagate(weightedinputOfLayer[layer]);
+                prevoutput = layers[layer].propagate(weightedinputOfLayer[layer], outputOfLayer[layer]);
             }
             double[] ret = (storage == null ? new double[prevoutput.Length] : storage);
             for (int i = 0; i < ret.Length; i++) ret[i] = prevoutput[i];
@@ -170,14 +173,14 @@ namespace NeuralNetworks
             {
                 for (t = 0; t < trainingset.Length; t++)
                 {
-                    propagateToEnd(trainingset[t], prediction);
-                    qerr = qerror(labels[t], prediction);
-
                     for (layer = 0; layer < getLayerCount(); layer++)
                     {
                         if (layer == 0) propagate(trainingset[t], layer + 1, 0, layeroutput[layer]);
                         else propagate(layeroutput[layer - 1], layer + 1, layer, layeroutput[layer]);
                     }
+                    //propagateToEnd(trainingset[t], prediction);
+                    prediction = layeroutput[getLayerCount() - 1];
+                    qerr = qerror(labels[t], prediction);
 
                     for (layer = getLayerCount() - 1; layer >= 1; layer--)
                     {

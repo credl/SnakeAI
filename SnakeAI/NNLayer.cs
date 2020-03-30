@@ -26,13 +26,14 @@ namespace NeuralNetworks
             return units.Length;
         }
 
-        public double[] propagate(double[] input)
+        public double[] propagate(double[] input, double[] storage = null)
         {
+            double[] ret = (storage == null ? propagateRet : storage);
             for (int u = 0; u < units.Length; u++)
             {
-                propagateRet[u] = units[u].activation(input[u]);
+                ret[u] = units[u].activation(input[u]);
             }
-            return propagateRet;
+            return ret;
         }
 
         public NNUnit getUnit(int i)

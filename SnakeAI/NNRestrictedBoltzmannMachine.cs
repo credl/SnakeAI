@@ -8,11 +8,11 @@ namespace NeuralNetworks
 {
     class NNRestrictedBoltzmannMachine
     {
-        NNLayer visible, hidden;
-        NNMatrix weights;
-        double[] biasVisible;
-        double[] biasHidden;
-        Random rnd;
+        private NNLayer visible, hidden;
+        private NNMatrix weights;
+        private double[] biasVisible;
+        private double[] biasHidden;
+        private Random rnd;
 
         public NNRestrictedBoltzmannMachine(int visibleUnitCnt, int hiddenUnitCnt)
         {
@@ -59,7 +59,6 @@ namespace NeuralNetworks
         public double[] sample(double[] props, double[] storage = null)
         {
             double[] ret = (storage == null ? new double[props.Length] : storage);
-
             for (int i = 0; i < props.Length; i++)
             {
                 ret[i] = (rnd.NextDouble() < props[i] ? 1.0f : 0.0f);
@@ -71,11 +70,11 @@ namespace NeuralNetworks
         {
             for (int v = 0; v < weights.rowCount(); v++)
             {
-                biasVisible[v] = (float)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1); ;
+                biasVisible[v] = rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1); ;
                 for (int h = 0; h < weights.colCount(); h++)
                 {
-                    weights[h, v] = (float)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
-                    if (v == 0) biasHidden[h] = (float)rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1); ;
+                    weights[h, v] = rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1);
+                    if (v == 0) biasHidden[h] = rnd.NextDouble() * (rnd.NextDouble() < 0.5 ? +1 : -1); ;
                 }
             }
         }
@@ -100,12 +99,12 @@ namespace NeuralNetworks
                     NNMatrix.outerProduct(visibleSample, hiddenSample2, negGrad);
 
                     // weights += (posGrad - negGrad) * learningRate
-                    weights.applyOperatorToThis(posGrad, negGrad, (weight, posG, negG) => (weight + (posG - negG)) * learningRate);
+                    weights.applyOperatorToThis(posGrad, negGrad, (weight, posG, negG) => (weight + (posG - negG) * learningRate));
 
                     // biasVisible = new NNMatrix(biasVisible) + (new NNMatrix(trainingset[t]) - (new NNMatrix(visibleSample)) * learningRate);
-                    for (b = 0; b < biasVisible.Length; b++) biasVisible[b] += (trainingset[t][b] - visibleSample[b]) * learningRate;
+                    for (b = 0; b < biasVisible.Length; b++) biasVisible[b] += ((trainingset[t][b] - visibleSample[b]) * learningRate);
                     // biasHidden = new NNMatrix(biasHidden) + ((new NNMatrix(hiddenSample) - (new NNMatrix(hiddenSample2))) * learningRate);
-                    for (b = 0; b < biasHidden.Length; b++) biasHidden[b] += (hiddenSample[b] - hiddenSample2[b]) * learningRate;
+                    for (b = 0; b < biasHidden.Length; b++) biasHidden[b] += ((hiddenSample[b] - hiddenSample2[b]) * learningRate);
                 }
             }
         }

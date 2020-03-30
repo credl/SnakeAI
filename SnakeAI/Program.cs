@@ -24,6 +24,14 @@ namespace SnakeAI
                     new double[]{ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0 },
                     new double[]{ 0.0, 0.0, 0.0, 1.0, 0.0, 1.0 },
                 };
+            /*trainingset = new double[][]
+                {
+                    new double[]{ 0.0, 0.0 },
+                    new double[]{ 0.0, 1.0 },
+                    new double[]{ 0.0, 0.0 },
+                    new double[]{ 0.0, 1.0 },
+                    new double[]{ 0.0, 1.0 },
+                };*/
             double[][] labels = new double[][]
                 {
                     new double[]{ 1, 0 },
@@ -72,16 +80,18 @@ namespace SnakeAI
             */
 
             /*
-            NNDeepBeliefNetwork dbn = new NNDeepBeliefNetwork(new int[] { 6, 4, 4, 2 }, new int[] { 2, 10, 10, 2 });
-            dbn.trainUnsupervised(trainingset, 0, 20000, 1.0f);
-            dbn.trainUnsupervised(trainingset, 1, 20000, 1.0f);
-            dbn.trainUnsupervised(trainingset, 2, 20000, 1.0f);
-            dbn.trainSupervised(trainingset, labels, 30000, 1.0);
+            NNDeepBeliefNetwork dbn = new NNDeepBeliefNetwork(new int[] { 6, 4, 3, 5, 2 }, new int[] { 2, 10, 2 });
+            dbn.trainUnsupervised(trainingset, 0, 10000, 0.1);
+            dbn.trainUnsupervised(trainingset, 1, 10000, 0.1);
+            dbn.trainUnsupervised(trainingset, 2, 1000, 0.1);
+            dbn.trainUnsupervised(trainingset, 3, 1000, 0.1);
+            dbn.trainSupervised(trainingset, labels, 1000, 1.0);
             foreach (double[] t in trainingset)
             {
                 double[] classification = dbn.propagateToEnd(t);
             }
             */
+            
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
