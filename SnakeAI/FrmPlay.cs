@@ -159,7 +159,7 @@ namespace SnakeAI
                     double[][] ar_labels = labels.ToArray();
 
                     /*
-                    network = new NNDeepBeliefNetwork(new int[] { ar_trainingset[0].Length, 20, 4 }, new int[] { 4, 4 });
+                    network = new NNDeepBeliefNetwork(new int[] { ar_trainingset[0].Length, 10, 5, 4 }, new int[] { 4, 4 });
                     for (int i = 0; i < ((NNDeepBeliefNetwork)network).getUnsupervisedLayerCount(); i++)
                     {
                         ((NNDeepBeliefNetwork)network).trainUnsupervised(ar_trainingset, i, 10000, 0.1);
@@ -167,8 +167,10 @@ namespace SnakeAI
                     ((NNDeepBeliefNetwork)network).trainSupervised(ar_trainingset, ar_labels, 1000, 1.0);
                     */
 
+                    
                     network = new NNAccordInterface(new int[] { ar_trainingset[0].Length, 10, 5, 4 });
                     ((NNAccordInterface)network).train(ar_trainingset, ar_labels, 10000, 0.1);
+                    
 
                     /*
                     network = new NNFeedForwardNetwork(new int[] { ar_trainingset[0].Length, 5, 4 });
